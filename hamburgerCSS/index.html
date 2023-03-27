@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>hamburgerCSSのみ</title>
+  <style>
+    .hamburger_btn {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      height: 60px;
+      width: 60px;
+      justify-content: center;
+      align-items: center;
+      z-index: 90;
+      background-color: #3584bb;
+    }
+
+    .hamburger_btn_span,
+    .hamburger_btn_span:before,
+    .hamburger_btn_span:after {
+      content: '';
+      display: block;
+      height: 3px;
+      width: 25px;
+      border-radius: 3px;
+      background-color: #fff;
+      position: absolute;
+    }
+
+    .hamburger_btn_span:before {
+      bottom: 8px;
+    }
+
+    .hamburger_btn_span:after {
+      top: 8px;
+    }
+
+
+    /* チェックが入ってる時のスタイル */
+    #hamburger_checkBox:checked~.hamburger_btn span {
+      background-color: rgba(255, 255, 255, 0);
+    }
+
+    #hamburger_checkBox:checked~.hamburger_btn span::before {
+      bottom: 0;
+      transform: rotate(45deg);
+    }
+
+    #hamburger_checkBox:checked~.hamburger_btn span::after {
+      top: 0;
+      transform: rotate(-45deg);
+    }
+
+    /* チェックボックスを隠す */
+    /* #hamburger_checkBox {
+      display: none;
+    } */
+  </style>
+</head>
+
+<body>
+<div class="fom-kvMenuList"></div>
+<div class="top-kvMenuList"></div>
+<div class="kv-menuList">
+
+  <div class="top-bgContainer">
+    <section class="top-about"></section>
+    <section class="top-info"></section>
+    <section class="top-contact"></section>
+  </div>
+
+
+  <header class="fom-header">
+    <nav class="fom-header_anchNav">
+      <ul class="fom-anchNavList">
+        <li class="fom-anchNavItem">
+          <a href="" class="fom-anchNavItem_link">リンク</a>
+        </li>
+        <li class="fom-anchNavItem">
+          <ul class="fom-brandNavList">
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <footer class="fom-footer">
+    <nav class="fom-footer_anchNav"></nav>
+  </footer>
+
+  <!-- 
+    接頭辞-セクション名_要素名(block)_要素名(inline) 
+
+  -->
+<div class="fom-about_menuList_inline"></div>
+<div class="product-about_menuList_inline"></div>
+
+
+<!-- top -->
+<div class="top-about"></div>
+
+<!-- product -->
+<div class="product-about"></div>
+
+<header class="header">
+  <button class="header_hmbgBtn">
+    <span class="hmbg_hmbgBtn_inline"></span>
+  </button>
+</header>
+
+</div>
+
+  <header>
+    <button type="button" class="hamburger">
+      <input type="checkbox" id="hamburger_checkBox">
+      <label for="hamburger_checkBox" class="hamburger_btn">
+        <span class="hamburger_btn_span"></span>
+      </label>
+    </button>
+  </header>
+</body>
+
+</html>

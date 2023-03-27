@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>SMACSS</title>
+</head>
+
+<body>
+  <header class="t-header">
+    <h1>SMACSS</h1>
+    <hr>
+  </header>
+
+  <main class="t-main">
+    <section>
+      <h2>CSSのカテゴライズ</h2>
+      <ul>
+        <li>ベース・・・要素そのもののデフォルトスタイル</li>
+        <li>レイアウト・・・ページをエリアごとに分割</li>
+        <li>モジュール・・・再利用可能なパーツ</li>
+        <li>ステート（状態）・・・レイアウトやモジュールの特定の状態を示す</li>
+        <li>テーマ・・・サイトのルック＆フィールの定義</li>
+      </ul>
+    </section>
+    <hr>
+
+    <section>
+      <h2>目的</h2>
+      <p>デザインの中で繰り返されるパターンを体系立てるため。</p>
+      <h3>メリット</h3>
+      <ul>
+        <li>コード量が少なくなる。</li>
+        <li>メンテナンス性を高める。</li>
+        <li>ユーザー体験の一貫性の向上。</li>
+      </ul>
+    </section>
+    <hr>
+
+    <section>
+      <h2>ベースルール</h2>
+      <p>
+        主に次のセレクタを使ってスタイルを適用する。<br />
+        要素そのものの見た目を定義するという性質のため、IDやクラスは使わない。
+      </p>
+      <ul>
+        <li>要素セレクタ（body、a）</li>
+        <li>属性セレクタ（input[type=text]）</li>
+        <li>擬似クラスセレクタ（a:hover）</li>
+      </ul>
+      <p>※注意）要素セレクタに対してあまりにも具体的なスタイルを指定をしてしまうと、後々その要素を使った別の見た目のモジュールを追加したくなった場合に、ベースのスタイルをすべて上書きしなければならなくなる。</p>
+      <h3>CSSリセット</h3>
+      <p>CSSリセットもベースルールに含まれる。</p>
+    </section>
+    <hr>
+
+    <section>
+      <h2>レイアウトルール</h2>
+      <h3>プレフィックス（l- / layout-）</h3>
+      <p>レイアウトルールをクラス名で管理する場合は、モジュールルールや状態ルールとの区別をつけるために、プリフィックスをつける。</p>
+      <h3>レイアウトとモジュールを分離するメリット</h3>
+      <p>レイアウトとモジュールを独立させることで、それぞれの再利用性がアップする。</p>
+      <div class="l-container-12">
+        <div class="l-grid-06">
+          <div class="box">box1</div>
+        </div>
+        <div class="l-grid-06">
+          <div class="box">box2</div>
+        </div>
+      </div>
+    </section>
+    <hr>
+
+    <section>
+      <h2>モジュールルール</h2>
+      <p>モジュールルールでは再利用可能な単位でパーツの具体的な見た目を定義する。</p>
+      <h3>プレフィックス</h3>
+      <p>子モジュールには親モジュール名をプレフィックスでつける。</p>
+      <div class="l-container-12">
+        <div class="l-grid-06">
+          <div class="box">
+            <p class="box-text">box1</p>
+          </div>
+        </div>
+        <div class="l-grid-06">
+          <div class="box">
+            <p class="box-text">box2</p>
+          </div>
+        </div>
+      </div>
+      <h3>クラス名をつけるタイミング</h3>
+      <p>モジュール全部にクラスを付ける必要はない。</p>
+      <h3>親要素での使い分けはしない</h3>
+      <p>同じ要素だけど置く場所が違うものは、親要素によっての指定をしない。</p>
+      <pre>
+      <code>
+        &lt;div class="l-main"&gt;
+          &lt;div class="search"&gt;~&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="l-sub"&gt;
+          &lt;div class="search search-vertical"&gt;~&lt;/div&gt;
+        &lt;/div&gt;
+      </code>
+    </pre>
+      <p>モジュールはモジュールルールで独立させ、レイアウトルールの親要素によってデザインが変動的にならないようにする。</p>
+      <p>
+        <strong>レイアウトクラスの子孫に指定して良いのは、レイアウトクラスのみ</strong>とし、<br>
+        <strong>モジュールクラスの子孫に指定して良いのは、モジュールクラスのみ</strong>
+        とする。
+      </p>
+    </section>
+    <hr>
+
+    <section>
+      <h2>ステート（状態）ルール</h2>
+      <p>特定の状態によってスタイルを上書きする。<br>
+        （状態の切りかえはjsやサーバ上で動くプログラムで行う）
+      </p>
+      <h3>プレフィックス</h3>
+      <p>'is-'を使う。</p>
+      <pre>
+      <code>
+        .is-hidden {
+          display: none;
+        }
+        .is-active {
+          display: block;
+        }
+        .is-error {
+          color: red;
+        }
+        .is-dialog-focus {
+          border: 3px solid blue;
+        }
+        .is-tab-active {
+          opacity: 1;
+        }
+      </code>
+    </pre>
+    </section>
+    <hr>
+
+    <section>
+      <h2>テーマルール</h2>
+      <p>テーマルールでは、サイト全体の見た目の雰囲気を統一させるための定義をする。</p>
+      <p>色に関わる部分などがテーマの管理対象となるので、例えば以下のように色に関するスタイルは、独立させて記述する。</p>
+      <pre>
+      <code>
+        //main.css//
+        .box {
+          border: 1px solid;
+        }
+
+        //theme.css//
+        .box {
+          background-color: #eee;
+          border-color: #ccc;
+        }
+      </code>
+    </pre>
+      <p>枠の色や背景色など、再利用性の高いものはプレフィックスにtheme-やt-を付けて用意する。</p>
+      <pre>
+      <code>
+        .t-header,
+        .t-footer {
+          background-color: aquamarine;
+        }
+        .main {
+          background-color: rgba(127, 255, 212, 0.164);
+        }
+      </code>
+    </pre>
+    </section>
+    <hr>
+
+    <section>
+      <h2>メリット</h2>
+      <ul>
+        <li>再利用性、メンテナンス性が向上。</li>
+        <li>FOMのような案件で活躍しそう。</li>
+        <li>Sassを使えば何がどこに書いてあるのかの管理が楽そう。</li>
+      </ul>
+      <h3>デメリット</h3>
+      <ul>
+        <li>Sassの導入が必須な気がする。</li>
+        <li>慣れるまでに時間がかかりそう。</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="t-footer">
+    footer
+  </footer>
+</body>

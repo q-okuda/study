@@ -1,0 +1,35 @@
+@charset "UTF-8";
+
+// reset
+@import "reset";
+
+// variables
+@import "variables/common";
+@import "variables/fontfamily";
+@import "variables/skin";
+
+// mixins
+@import "mixins/common";
+@import "mixins/responsive";
+
+// core
+@import "core";
+
+// parts
+@import "parts/*";
+
+// pages
+@import "pages/*";
+
+// utility
+@import "util";
+
+// libs
+// @import "libs/swiper";
+
+// print対策用
+@media print {
+  html {
+    zoom: 0.8;
+  }
+}

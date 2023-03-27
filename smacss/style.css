@@ -1,0 +1,124 @@
+@charset "utf-8";
+
+/* ==================================== */
+/* Base */
+/* ==================================== */
+body,
+hr,
+h1 {
+  margin: 0;
+  padding: 0;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+/* ==================================== */
+/* Layout */
+/* ==================================== */
+.l-container-12 {
+  width: 480px;
+  margin-left: -10px;
+}
+.l-container-12:after {
+  content: '';
+  display: table;
+  clear: both;
+}
+.l-grid-01,
+.l-grid-02,
+.l-grid-03,
+.l-grid-04,
+.l-grid-05,
+.l-grid-06,
+.l-grid-07,
+.l-grid-08,
+.l-grid-09,
+.l-grid-10,
+.l-grid-11,
+.l-grid-12 {
+  float: left;
+  margin-left: 10px;
+}
+.l-grid-01 {
+  width: 30px;
+}
+.l-grid-02 {
+  width: 70px;
+}
+.l-grid-03 {
+  width: 110px;
+}
+.l-grid-04 {
+  width: 150px;
+}
+.l-grid-05 {
+  width: 190px;
+}
+.l-grid-06 {
+  width: 230px;
+}
+.l-grid-07 {
+  width: 270px;
+}
+.l-grid-08 {
+  width: 310px;
+}
+.l-grid-09 {
+  width: 350px;
+}
+.l-grid-10 {
+  width: 390px;
+}
+.l-grid-11 {
+  width: 430px;
+}
+.l-grid-12 {
+  width: 470px;
+}
+
+/* ==================================== */
+/* Module */
+/* ==================================== */
+.box {
+  padding: 20px 0;
+  background: #333;
+  color: #fff;
+  text-align: center;
+}
+
+.box-text {
+  font-weight: bold;
+  font-style: italic;
+}
+
+/* ==================================== */
+/*  State */
+/* ==================================== */
+.is-hidden {
+  display: none;
+}
+.is-active {
+  display: block;
+}
+.is-error {
+  color: red;
+}
+.is-dialog-focus {
+  border: 3px solid blue;
+}
+.is-tab-active {
+  opacity: 1;
+}
+
+/* ==================================== */
+/*  Theme */
+/* ==================================== */
+.t-header,
+.t-footer {
+  background-color: antiquewhite;
+}
+.t-main {
+  background-color: #fff;
+}

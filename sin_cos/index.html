@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sin(),cos()</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="loadingWrap">
+    <div class="loading">
+      <!-- style="--index: *;" でインデックス番号を振る -->
+      <span class="loading-item" style="--index: 0;"></span>
+      <span class="loading-item" style="--index: 1;"></span>
+      <span class="loading-item" style="--index: 2;"></span>
+      <span class="loading-item" style="--index: 3;"></span>
+      <span class="loading-item" style="--index: 4;"></span>
+      <span class="loading-item" style="--index: 5;"></span>
+      <span class="loading-item" style="--index: 6;"></span>
+      <span class="loading-item" style="--index: 7;"></span>
+    </div>
+  </div>
+
+  <div class="lineWrap">
+    <div class="lineWrapInner">
+      <div class="line js-line">
+        <span class="line-item" style="--index: 0;">こ</span>
+        <span class="line-item" style="--index: 1;">れ</span>
+        <span class="line-item" style="--index: 2;">は</span>
+        <span class="line-item" style="--index: 3;">s</span>
+        <span class="line-item" style="--index: 4;">i</span>
+        <span class="line-item" style="--index: 5;">n</span>
+        <span class="line-item" style="--index: 6;">e</span>
+        <span class="line-item" style="--index: 7;">w</span>
+        <span class="line-item" style="--index: 8;">a</span>
+        <span class="line-item" style="--index: 9;">v</span>
+        <span class="line-item" style="--index: 10;">e</span>
+        <span class="line-item" style="--index: 11;">を</span>
+        <span class="line-item" style="--index: 12;">使</span>
+        <span class="line-item" style="--index: 13;">っ</span>
+        <span class="line-item" style="--index: 14;">て</span>
+        <span class="line-item" style="--index: 15;">い</span>
+        <span class="line-item" style="--index: 16;">ま</span>
+        <span class="line-item" style="--index: 17;">す。</span>
+      </div>
+      <div class="line js-line">
+        <span class="line-item" style="--index: 0;">こ</span>
+        <span class="line-item" style="--index: 1;">れ</span>
+        <span class="line-item" style="--index: 2;">は</span>
+        <span class="line-item" style="--index: 3;">s</span>
+        <span class="line-item" style="--index: 4;">i</span>
+        <span class="line-item" style="--index: 5;">n</span>
+        <span class="line-item" style="--index: 6;">e</span>
+        <span class="line-item" style="--index: 7;">w</span>
+        <span class="line-item" style="--index: 8;">a</span>
+        <span class="line-item" style="--index: 9;">v</span>
+        <span class="line-item" style="--index: 10;">e</span>
+        <span class="line-item" style="--index: 11;">を</span>
+        <span class="line-item" style="--index: 12;">使</span>
+        <span class="line-item" style="--index: 13;">っ</span>
+        <span class="line-item" style="--index: 14;">て</span>
+        <span class="line-item" style="--index: 15;">い</span>
+        <span class="line-item" style="--index: 16;">ま</span>
+        <span class="line-item" style="--index: 17;">す。</span>
+      </div>
+      <div class="line js-line">
+        <span class="line-item" style="--index: 0;">こ</span>
+        <span class="line-item" style="--index: 1;">れ</span>
+        <span class="line-item" style="--index: 2;">は</span>
+        <span class="line-item" style="--index: 3;">s</span>
+        <span class="line-item" style="--index: 4;">i</span>
+        <span class="line-item" style="--index: 5;">n</span>
+        <span class="line-item" style="--index: 6;">e</span>
+        <span class="line-item" style="--index: 7;">w</span>
+        <span class="line-item" style="--index: 8;">a</span>
+        <span class="line-item" style="--index: 9;">v</span>
+        <span class="line-item" style="--index: 10;">e</span>
+        <span class="line-item" style="--index: 11;">を</span>
+        <span class="line-item" style="--index: 12;">使</span>
+        <span class="line-item" style="--index: 13;">っ</span>
+        <span class="line-item" style="--index: 14;">て</span>
+        <span class="line-item" style="--index: 15;">い</span>
+        <span class="line-item" style="--index: 16;">ま</span>
+        <span class="line-item" style="--index: 17;">す。</span>
+      </div>
+      <div class="line js-line">
+        <span class="line-item" style="--index: 0;">こ</span>
+        <span class="line-item" style="--index: 1;">れ</span>
+        <span class="line-item" style="--index: 2;">は</span>
+        <span class="line-item" style="--index: 3;">s</span>
+        <span class="line-item" style="--index: 4;">i</span>
+        <span class="line-item" style="--index: 5;">n</span>
+        <span class="line-item" style="--index: 6;">e</span>
+        <span class="line-item" style="--index: 7;">w</span>
+        <span class="line-item" style="--index: 8;">a</span>
+        <span class="line-item" style="--index: 9;">v</span>
+        <span class="line-item" style="--index: 10;">e</span>
+        <span class="line-item" style="--index: 11;">を</span>
+        <span class="line-item" style="--index: 12;">使</span>
+        <span class="line-item" style="--index: 13;">っ</span>
+        <span class="line-item" style="--index: 14;">て</span>
+        <span class="line-item" style="--index: 15;">い</span>
+        <span class="line-item" style="--index: 16;">ま</span>
+        <span class="line-item" style="--index: 17;">す。</span>
+      </div>
+      <div class="line js-line">
+        <span class="line-item" style="--index: 0;">こ</span>
+        <span class="line-item" style="--index: 1;">れ</span>
+        <span class="line-item" style="--index: 2;">は</span>
+        <span class="line-item" style="--index: 3;">s</span>
+        <span class="line-item" style="--index: 4;">i</span>
+        <span class="line-item" style="--index: 5;">n</span>
+        <span class="line-item" style="--index: 6;">e</span>
+        <span class="line-item" style="--index: 7;">w</span>
+        <span class="line-item" style="--index: 8;">a</span>
+        <span class="line-item" style="--index: 9;">v</span>
+        <span class="line-item" style="--index: 10;">e</span>
+        <span class="line-item" style="--index: 11;">を</span>
+        <span class="line-item" style="--index: 12;">使</span>
+        <span class="line-item" style="--index: 13;">っ</span>
+        <span class="line-item" style="--index: 14;">て</span>
+        <span class="line-item" style="--index: 15;">い</span>
+        <span class="line-item" style="--index: 16;">ま</span>
+        <span class="line-item" style="--index: 17;">す。</span>
+      </div>
+      <div class="line js-line">
+        <span class="line-item" style="--index: 0;">こ</span>
+        <span class="line-item" style="--index: 1;">れ</span>
+        <span class="line-item" style="--index: 2;">は</span>
+        <span class="line-item" style="--index: 3;">s</span>
+        <span class="line-item" style="--index: 4;">i</span>
+        <span class="line-item" style="--index: 5;">n</span>
+        <span class="line-item" style="--index: 6;">e</span>
+        <span class="line-item" style="--index: 7;">w</span>
+        <span class="line-item" style="--index: 8;">a</span>
+        <span class="line-item" style="--index: 9;">v</span>
+        <span class="line-item" style="--index: 10;">e</span>
+        <span class="line-item" style="--index: 11;">を</span>
+        <span class="line-item" style="--index: 12;">使</span>
+        <span class="line-item" style="--index: 13;">っ</span>
+        <span class="line-item" style="--index: 14;">て</span>
+        <span class="line-item" style="--index: 15;">い</span>
+        <span class="line-item" style="--index: 16;">ま</span>
+        <span class="line-item" style="--index: 17;">す。</span>
+      </div>
+      <div class="line js-line">
+        <span class="line-item" style="--index: 0;">こ</span>
+        <span class="line-item" style="--index: 1;">れ</span>
+        <span class="line-item" style="--index: 2;">は</span>
+        <span class="line-item" style="--index: 3;">s</span>
+        <span class="line-item" style="--index: 4;">i</span>
+        <span class="line-item" style="--index: 5;">n</span>
+        <span class="line-item" style="--index: 6;">e</span>
+        <span class="line-item" style="--index: 7;">w</span>
+        <span class="line-item" style="--index: 8;">a</span>
+        <span class="line-item" style="--index: 9;">v</span>
+        <span class="line-item" style="--index: 10;">e</span>
+        <span class="line-item" style="--index: 11;">を</span>
+        <span class="line-item" style="--index: 12;">使</span>
+        <span class="line-item" style="--index: 13;">っ</span>
+        <span class="line-item" style="--index: 14;">て</span>
+        <span class="line-item" style="--index: 15;">い</span>
+        <span class="line-item" style="--index: 16;">ま</span>
+        <span class="line-item" style="--index: 17;">す。</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="spinWrap">
+    <span class="spin-item"></span>
+  </div>
+
+  <script>
+    const d = document;
+    const w = window;
+
+    // ローディング
+    const loadingItems = [].slice.call(d.getElementsByClassName('loading-item'));
+    loadingItems.forEach((el, i) => {
+      const px = 30;
+      const angle = Math.PI * 2 / loadingItems.length * i;
+      const x = Math.cos(angle) * px;
+      const y = Math.sin(angle) * px;
+
+      el.style.setProperty('--x', x + 'px');
+      el.style.setProperty('--y', y + 'px');
+    });
+
+
+    // テキストアニメーション
+    let startTime = Date.now();
+
+    const lines = [].slice.call(d.getElementsByClassName('js-line'));
+    lines.forEach((line, index) => {
+      const items = [].slice.call(lines[index].children);
+      items.forEach((item, index) => {
+        const px = 10;
+        const angle = Math.PI * 2 / items.length * index;
+        let y = Math.sin(angle) * px;
+        item.style.setProperty('--y', y + 'px');
+
+        let move = 0;
+        const waveAnimation = () => {
+          move = (startTime - Date.now()) / 500;
+          y = Math.sin(angle + move) * px;
+          item.style.setProperty('--y', y + 'px');
+          requestAnimationFrame(waveAnimation);
+        }
+        waveAnimation();
+      });
+    });
+
+    // spin
+    const balls = [].slice.call(d.getElementsByClassName('spin-item'));
+    const min = 0;
+    const max = 50;
+    
+    balls.forEach((ball, index) => {
+      const random = Math.ceil(Math.random() * (max - min)) + min;
+      ball.style.setProperty('--y', random + '%');
+    });
+
+  </script>
+</body>
+</html>

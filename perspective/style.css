@@ -1,0 +1,129 @@
+@charset "utf-8";
+
+/*--共通 CSS--*/
+.parent {
+  width: 150px;
+  height: 150px;
+  display: inline-block;
+  background: rgba(204, 204, 204, 0.7);
+  margin: 80px 100px 50px;
+  position: relative;
+}
+
+.child {
+  width: 150px;
+  height: 150px;
+  color: #333;
+  text-align: center;
+  line-height: 150px;
+  position: absolute;
+}
+
+/*--赤色--*/
+.red {
+  transform: perspective(200px) rotateY(40deg);
+  transform-origin: 0% 20%;
+  background-color: #fd6158;
+}
+
+/*--黄色--*/
+.yellow {
+  transform: perspective(200px) rotateX(40deg);
+  transform-origin: bottom center;
+  background-color: #febe3e;
+}
+
+/* 面の一般的な設定 */
+.container {
+  width: 200px;
+  height: 200px;
+  margin: 75px 0 0 75px;
+  border: none;
+}
+
+.cube {
+  width: 100%;
+  height: 100%;
+  perspective: 350px;
+  backface-visibility: visible;
+  /* backface-visibility...要素がユーザーに対して裏側を向いたときに、裏面を可視にするかどうかの設定。 */
+  perspective-origin: 100% 75%;
+  /* perspective-origin...閲覧者の視点の位置を決める。 */
+  transform-style: preserve-3d;
+  /* transform-style...要素の子要素を3D空間に配置するのか、平面化して要素の平面に配置するのかの設定。 */
+  position: relative;
+}
+
+.face {
+  display: block;
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border: none;
+  line-height: 100px;
+  font-family: sans-serif;
+  font-size: 60px;
+  color: white;
+  text-align: center;
+}
+
+/* 方向に基づいてそれぞれの面を設定 */
+.front {
+  background: rgba(0, 0, 0, 0.3);
+  transform: rotateX(0deg) translateZ(50px);
+  transition: transform 2s;
+}
+
+.back {
+  background: rgba(0, 255, 0, 1);
+  transform: rotateX(0deg) rotateY(180deg) translateZ(50px);
+  transition: transform 2s;
+}
+
+.right {
+  background: rgba(196, 0, 0, 0.7);
+  transform: rotateY(90deg) translateZ(50px);
+  transition: transform 2s;
+}
+
+.left {
+  background: rgba(0, 0, 196, 0.7);
+  transform: rotateY(-90deg) translateZ(50px);
+  transition: transform 2s;
+}
+
+.top {
+  background: rgba(196, 196, 0, 0.7);
+  transform: rotateX(90deg) translateZ(50px);
+  transition: transform 2s;
+}
+
+.bottom {
+  background: rgba(196, 0, 196, 0.7);
+  transform: rotateX(-90deg) translateZ(50px);
+  transition: transform 2s;
+}
+
+.cube:hover .front {
+  transform: rotateX(-90deg) translateZ(50px);
+}
+
+.cube:hover .back {
+  transform: rotateX(-90deg) rotateY(180deg) translateZ(50px);
+}
+
+.cube:hover .right {
+  transform: rotateY(90deg) translateZ(50px) rotateZ(-90deg);
+}
+
+.cube:hover .left {
+  transform: rotateY(-90deg) translateZ(50px) rotateZ(90deg);
+}
+
+.cube:hover .top {
+  transform: rotateX(0deg) translateZ(50px);
+}
+
+.cube:hover .bottom {
+  transform: rotateX(-180deg) translateZ(50px);
+}

@@ -1,0 +1,29 @@
+@charset "UTF-8";
+
+
+
+/* ie */
+@media all and (-ms-high-contrast: none) {
+  h1::after {
+    content: 'IE';
+  }
+}
+
+/* chrome, edge */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  h1::after {
+    content: 'chrome or edge';
+  }
+}
+
+/* firefox */
+@-moz-document url-prefix() {
+  h1::after {
+    content: 'firefox';
+  }
+}
+
+/* safari */
+_::-webkit-full-page-media, _:future, :root h1::after {
+  content: 'safari';
+}

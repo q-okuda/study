@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grid</title>
+  <style>
+    .gridContainer {
+      border: 1px solid red;
+      padding: 10px;
+
+      display: grid;
+      /* grid-template-colums 列サイズ設定 */
+      /* grid-template-columns: 200px 200px 200px; */
+      /* 1:1:1 */
+      /* grid-template-columns: 1fr 1fr 1fr; */
+      grid-template-columns: repeat(10, 1fr);
+      /* 2:1:1 */
+      /* grid-template-columns: 2fr 1fr 1fr; */
+      /* 1:2を3回反復 */
+
+      /* grid-auto-rows 行サイズ設定 */
+      grid-auto-rows: minmax(100px, auto);
+
+      /* 間隔設定 */
+      /* column-gap: 20px;
+      row-gap: 10px; */
+      gap: 10px 20px;
+
+      /* 内包物の位置 */
+      /* place-content: center;
+      place-items: center; */
+    }
+
+    .item {
+      border: 1px solid blue;
+      background-color: aquamarine;
+
+      display: grid;
+      place-content: center;
+      place-items: center;
+    }
+
+    .item1 {
+      /* grid-column-start: 1;
+      grid-column-end: 4;
+      grid-row-start: 1;
+      grid-row-end: 3; */
+      grid-column: 1 / 4;
+      grid-row: 1 / 3;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="gridContainer">
+    <div class="item item1"><span>One</span><span>testtesttesttest</span></div>
+    <div class="item item2">Two</div>
+    <div class="item item3">Three</div>
+    <div class="item item4">Four</div>
+    <div class="item item5">Five</div>
+    <div class="item item6">Six</div>
+    <div class="item item7">Seven</div>
+    <div class="item item8">Eight</div>
+    <div class="item item9">Nine</div>
+    <div class="item item10">Ten</div>
+  </div>
+</body>
+
+</html>

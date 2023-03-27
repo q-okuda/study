@@ -1,0 +1,60 @@
+@charset "utf-8";
+
+.card{
+  display: block;
+  width: 200px;
+  height: 100px;
+  border: 1px solid #404040;
+  padding: 10px;
+  margin-bottom: 20px;
+  background-color: aliceblue;
+}
+.card header{
+  font-size: 1.1rem;
+}
+button{
+  cursor: pointer;
+}
+.none{
+  display: none;
+}
+
+/* modalのCSS */
+.modalWrapper {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1;
+  /* つっかえ棒を機能させるためのCSS */
+  overscroll-behavior: contain;
+  overflow-y: scroll;
+}
+.modal {
+  top: 10px;
+  width: 400px;
+  height: 250px;
+  background-color: white;
+  z-index: 2;
+  border-radius: 15px;
+}
+.modal header {
+  padding: 8px 16px;
+  background-color: rgba(22, 104, 255, 0.8);
+  border-radius: 15px 15px 0 0;
+}
+.modal p {
+  padding: 0px 16px ;
+}
+
+/* つっかえ棒 */
+.nonScroll{
+  height:calc(100vh + 1px) ;
+  width: 1px;
+  background-color: transparent;
+}

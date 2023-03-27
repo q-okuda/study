@@ -1,0 +1,43 @@
+@charset "utf-8";
+
+.box {
+  width: 500px;
+  padding: 10px 30px;
+  border-radius: 20px;
+  border: 3px solid #000;
+}
+
+.title {
+  border-bottom: 2px solid #000;
+}
+
+.text {
+  width: 100%;
+  word-wrap: break-word;
+  border-bottom: 2px solid #000;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #222;
+  }
+
+  .box {
+    background-color: #222;
+    border: 3px solid #fff;
+  }
+
+  .title {
+    color: #fff;
+    border-bottom: 2px solid #fff;
+  }
+
+  .text {
+    color: #fff;
+    border-bottom: 2px solid #fff;
+  }
+
+  .list {
+    color: #fff;
+  }
+}

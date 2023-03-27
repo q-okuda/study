@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>OOCSS</title>
+  </head>
+  <body>
+    <h1>OOCSS</h1>
+    <p>(object oriented css)</p>
+    <h2>構造と見た目を分離する。</h2>
+    <p>
+      位置や大きさなどの構造に関するプロパティと、色情報などの見た目に関するプロパティを、同じクラスで記述してはならない。
+    </p>
+    <h2>コンテナとコンテンツを分離させる。</h2>
+    <p>再利用性を高めるため。</p>
+    <p>分離させるとは→子孫セレクタでのスタイル指定は止める。</p>
+    <ul class="rowList">
+      <li class="textBox bgRed">red</li>
+      <li class="textBox bgGreen">green</li>
+      <li class="textBox bgBlue">blue</li>
+    </ul>
+    <ul class="columnList">
+      <li class="textBox bgRed">red</li>
+      <li class="textBox bgGreen">green</li>
+      <li class="textBox bgYellow">yellow</li>
+    </ul>
+    <h2>メリット</h2>
+    <ul>
+      <li>パーツの使い回しがしやすい。</li>
+      <li>場所に依存しない。</li>
+    </ul>
+    <h2>デメリット</h2>
+    <ul>
+      <li>
+        微妙に構造や見た目が違うパーツが多くあるデザインのページ作りには記述量が多くなりそう。
+      </li>
+    </ul>
+  </body>
+</html>

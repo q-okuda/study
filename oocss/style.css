@@ -1,0 +1,39 @@
+@charset "utf-8";
+
+.rowList {
+  display: flex;
+  list-style: none;
+}
+
+.columnList {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+}
+
+.textBox {
+  height: 100px;
+  width: 100px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.bgRed {
+  background-color: red;
+  color: white;
+}
+
+.bgGreen {
+  background-color: green;
+  color: white;
+}
+
+.bgBlue {
+  background-color: blue;
+  color: white;
+}
+
+.bgYellow {
+  background-color: yellow;
+  color: black;
+}

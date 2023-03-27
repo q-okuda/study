@@ -1,0 +1,53 @@
+.box {
+  position: relative;
+  width: 25%;
+  background-color: #ddd;
+  margin-bottom: 10px;
+}
+
+.box::before {
+  content: '';
+  display: block;
+  padding-top: 100%;
+}
+
+.box__content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.box.mod-4x3::before {
+  content: '';
+  display: block;
+  padding-top: 75%;
+}
+
+.box.mod-3x2::before {
+  content: '';
+  display: block;
+  padding-top: 66.66%;
+}
+
+.box.mod-16x9::before {
+  content: '';
+  display: block;
+  padding-top: 56.25%;
+}
+
+.box.mod-2x3::before {
+  content: '';
+  display: block;
+  padding-top: 150%;
+}
+
+.box.mod-1x2::before {
+  content: '';
+  display: block;
+  padding-top: 200%;
+}

@@ -1,0 +1,149 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+}
+
+.loadingWrap {
+  position: relative;
+  width: 200px;
+  aspect-ratio: 1 / 1 ;
+}
+
+.loading {
+  position: absolute;
+  height: 60px;
+  width: 60px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.loading-item {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #8B41F2;
+  opacity: 0.5;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  /** HTML内で付与したindex番号を取得して角度を計算。 */
+  /* --angle: calc(360deg / 8 * var(--index)); */
+
+  /** コサイン関数とサイン関数で座標位置を計算。 */
+  /* --x: calc(cos(var(--angle)) * 30px);
+  --y: calc(sin(var(--angle)) * 30px); */
+  translate: calc(var(--x) - 50%) calc(var(--y) - 50%);
+
+  --duration: 1.8s;
+  --delay: calc(var(--duration) * var(--index) / 8);
+  animation: animate var(--duration) var(--delay) infinite ease-in-out;
+}
+@keyframes animate {
+  50% {
+    opacity: 1;
+    scale: 1.6;
+  }
+}
+
+.lineWrap {
+  width: 340px;
+  height: 100px;
+  background-color: #000; 
+  position: relative;
+  overflow: hidden;
+}
+
+.lineWrapInner {
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-10deg);
+}
+
+.line-item {
+  display: inline-block;
+  color: #fff;
+  /* 0°から360°の間で角度を計算 */
+  /* --angle: calc(360deg / 18 * var(--index)); */
+  /* カーブの振れ幅を10pxにする */
+  /* --y: calc(sin(var(--angle)) * 10px); */
+  transform: translate(0, var(--y));
+
+  /* --duration: 1.8s;
+  --delay: calc(var(--duration) * var(--index) / 18);
+  animation: wave var(--duration) var(--delay) infinite ease-in-out; */
+}
+
+@keyframes wave {
+  50% {
+    transform: translate(0, calc(var(--y) + 10px));
+  }
+}
+
+.spinWrap {
+  margin-top: 20px;
+  width: 400px;
+  aspect-ratio: 1 / 1;
+  background-color: #000;
+  position: relative;
+}
+
+.spinWrap::before {
+  content: '';
+  display: block;
+  height: 100%;
+  width: 2px;
+  background: #fff;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.spinWrap::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: #fff;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.spin-item {
+  display: block;
+  width: 10px;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background-color: red;
+  position: absolute;
+  top: var(--y);
+  left: 50%;
+  /* left: var(--y); */
+  transform: translate(-50%, -50%);
+  animation: around 3s ease-in-out infinite;
+}
+
+@keyframes around {
+  25% {
+    left: var(--y);
+  }
+  50% {
+    top: calc(var(--y) + (50% - var(--y)) - (var(--y) - 50%));
+    left: 50%;
+  }
+  75% {
+    left: calc(var(--y) + (50% - var(--y)) - (var(--y) - 50%));
+  }
+}

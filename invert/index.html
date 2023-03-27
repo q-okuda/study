@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>invert</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+
+    body {
+      background-color: #fff;
+    }
+
+    .code {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ttl {
+      width: 100%;
+      position: fixed;
+      top: 50% !important;
+      left: 50% !important;
+      -ms-transform: translate(-50%, -50%);
+      -webkit-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+      text-align: center;
+      font-size: 4rem;
+      font-weight: bold;
+      z-index: 10;
+    }
+
+    .ttl h1 {
+      overflow: hidden;
+    }
+
+    .wrap1 {
+      height: 100vh;
+      background: #000;
+    }
+
+    .wrap2 {
+      height: 100vh;
+      background: #fff;
+    }
+
+    .wrap3 {
+      height: 100vh;
+      background: #555;
+    }
+
+    .midnightHeader.default h1 {
+      color: #fff;
+    }
+
+    .hoge {
+      filter: invert(100%);
+      mix-blend-mode: exclusion;
+      position: fixed;
+      top: 2%;
+      right: 2%;
+    }
+  </style>
+</head>
+
+<body>
+  <main style="padding-bottom:200vh;">
+    <div class="code">
+      <div class="inner">
+        <p class="hoge" style="font-size:4rem;">三</p>
+        <div class="ttl">
+          <h1>Midnight</h1>
+        </div>
+        <div class="wrap1" data-midnight="default"></div>
+        <div class="wrap2" data-midnight="black"></div>
+        <div class="wrap3" data-midnight="default"></div>
+        <div style="background-color:white; height:200px;" data-midnight="black"></div>
+        <div style="background-color:black; height:200px;"></div>
+        <div style="background-color:blue; height:200px;"></div>
+        <div style="background-color:red; height:200px;"></div>
+        <div style="background-color:green; height:200px;"></div>
+        <div style="background-color:yellow; height:200px;"></div>
+      </div>
+    </div>
+
+  </main>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="./midnight.jquery.min.js"></script>
+  <script>
+    $(function () {
+      $('.ttl').midnight();
+    });
+  </script>
+</body>
+
+</html>

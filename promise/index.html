@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>promise</title>
+</head>
+
+<body>
+  <button type="button" onclick="myfunc01()">待たない</button>
+  <button type="button" onclick="myfunc02()">待つ（promise）</button>
+  <button type="button" onclick="myfunc03()">json取得（fetch）</button>
+  <script>
+    const myfunc01 = () => {
+      console.log('1番目');
+      setTimeout(() => {
+        console.log('2番目(1秒後に実行)');
+      }, 1000);
+      console.log('3番目');
+    }
+
+    const myfunc02 = () => {
+      console.log('1番目');
+
+      new Promise((resolve, reject) => {
+        setTimeout(() => {
+          console.log('2番目(1秒後に実行)');
+          resolve();
+        }, 1000);
+      }).then(() => {
+        console.log('3番目');
+      }).catch(() => {
+        console.log('reject');
+      });
+    }
+
+    url = 'https://jsonplaceholder.typicode.com/posts/';
+    const myfunc03 = () => {
+      fetch(url)
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.log('問題発生！！', error));
+    };
+
+  </script>
+</body>
+
+</html>

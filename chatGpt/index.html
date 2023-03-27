@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <!-- 選択された色を表示するための要素 -->
+  <div id="selected-color"></div>
+
+  <!-- 色の選択肢を表示するための要素 -->
+  <div id="color-palette">
+    <div class="color" data-color="red"></div>
+    <div class="color" data-color="orange"></div>
+    <div class="color" data-color="yellow"></div>
+    <div class="color" data-color="green"></div>
+    <div class="color" data-color="blue"></div>
+    <div class="color" data-color="indigo"></div>
+    <div class="color" data-color="violet"></div>
+  </div>
+
+  <!-- 塗り絵を表示するための要素 -->
+  <div id="painting">
+    <svg id="svg" viewBox="0 0 100 100">
+      <path d="M10,10 L10,90 L90,90 L90,10 Z" class="path"></path>
+      <path d="M20,20 L20,80 L80,80 L80,20 Z" class="path"></path>
+      <path d="M30,30 L30,70 L70,70 L70,30 Z" class="path"></path>
+      <path d="M40,40 L40,60 L60,60 L60,40 Z" class="path"></path>
+    </svg>
+  </div>
+
+  <!-- 保存ボタン -->
+  <button id="save-button">保存</button>
+  
+  <script>
+    // 選択された色
+    let selectedColor;
+
+    // HTML上の要素を取得する
+    const selectedColorElem = document.getElementById('selected-color');
+    const colorPaletteElem = document.getElementById('color-palette');
+    const paintingElem = document.getElementById('painting');
+    const saveButton = document.getElementById('save-button');
+    const svg = document.getElementById('svg');
+
+    // 色が選択された時の処理
+    colorPaletteElem.addEventListener('click', event => {
+      // 選択された色を取得する
+      selectedColor = event.target.dataset.color;
+
+      // 選択された色を表示するための要素の背景色を変更する
+      selectedColorElem.style.backgroundColor = selectedColor;
+    });
+
+    // 塗り絵のpath要素がクリックされた時の処理
+    paintingElem.addEventListener('click', event => {
+      // クリックされた要素がpath要素であるかどうかを確認する
+      if (event.target.tagName === 'path') {
+        // 選択された色をpath要素のfill属性に設定する
+        event.target.style.fill = selectedColor;
+      }
+    });
+
+    // 保存ボタンがクリックされた時の処理
+    saveButton.addEventListener('click', () => {
+      // 塗り絵を表示するためのCanvas要素を生成する
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      // CanvasのサイズをSVG画像と同じにする
+      const { width, height } = paintingElem.getBoundingClientRect();
+      canvas.width = width;
+      canvas.height = height;
+
+      // SVG画像をCanvasに描画する
+      const image = new Image();
+      const encodedData = window.btoa(new XMLSerializer().serializeToString(svg));
+      image.src = `data:image/svg+xml;base64,${encodedData}`;
+
+      image.onload = () => {
+        ctx.drawImage(image, 0, 0);
+
+        // Canvasから画像データを取得する
+        const imageData = canvas.toDataURL('image/jpeg');
+
+        // 画像データをダウンロードする
+        const link = document.createElement('a');
+        link.href = imageData;
+        link.download = 'painting.jpg';
+        link.click();
+      };
+    });
+  </script>
+</body>
+
+</html>

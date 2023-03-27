@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vue.js</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+</head>
+
+<body>
+  <style>
+    .red {
+      color: red;
+    }
+
+    .green {
+      color: green;
+    }
+
+    .blue {
+      color: blue;
+    }
+  </style>
+  <div id="app">
+    {{ number }}
+    <!-- v-on: イベントハンドラ -->
+    <button v-on:click="countUp">カウントアップ</button>
+    <button @click="countDown">カウントダウン</button>
+    <!-- v-text dataをテキストとして出力 -->
+    <div v-text="number"></div>
+    <!-- v-if dataの状態で条件分岐 -->
+    <div v-if="number">条件次第で表示</div>
+    <ul>
+      <!-- v-for 繰り返し -->
+      <li v-for="item in items">{{ item }}</li>
+    </ul>
+    <!-- v-bind: 指定した属性とdataを紐付ける -->
+    <div v-bind:class="color">カラー</div>
+    <div :class="color">カラー</div>
+    <div :style="styleObject">Style</div>
+    <!-- v-model inputのvalueとdataを紐付ける -->
+    <input type="text" v-model="color">
+    {{ custom_color }}
+  </div>
+
+  <script>
+    new Vue({
+      el: "#app", //Vueの利用範囲
+      data: {
+        number: 1, //Vueで扱うことのできる変数のようなもの
+        items: [1, 2, 3],
+        color: 'red',
+        styleObject: {
+          color: '',
+          fontSize: '20px',
+        }
+      },
+      methods: {
+        countUp: function () {
+          this.number++;
+        },
+        countDown: function () {
+          this.number--;
+        },
+      },
+      computed: {
+        custom_color: function () {
+          return this.color.toUpperCase();
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>

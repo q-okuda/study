@@ -1,0 +1,37 @@
+@charset "utf-8";
+
+* {
+  margin: 0;
+  padding: 0;
+  margin-top: 10px;
+}
+
+body {
+  padding: 10px;
+}
+
+.square {
+  width: 150px;
+  height: 150px;
+  background-color: red;
+  transform: scale(0.5);
+}
+
+.circle {
+  width: 150px;
+  height: 150px;
+  background-color: blue;
+  border-radius: 100%;
+}
+
+.obj {
+  padding: 10px;
+  border: 1px solid #000;
+  text-align: center;
+}
+
+.attr {
+  padding: 10px;
+  border: 1px solid #000;
+  text-align: center;
+}

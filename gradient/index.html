@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>gradient</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+
+    .box {
+      width: 400px;
+      height: 200px;
+      margin: 10px;
+    }
+
+    /* 直線状 */
+    .linear {
+      background: linear-gradient(to right, skyblue 0%, blue 100%);
+    }
+
+    /* 放射状 */
+    .radial {
+      background: radial-gradient(skyblue 0%, blue 100%);
+    }
+
+    /* 円錐状 */
+    .conic {
+      background: conic-gradient(skyblue 0%, blue 100%);
+    }
+
+    /* カラーストップの位置は、deg（角度）、％（割合）、turn（回転数）などの単位が使える。 */
+    .conic--rainbow {
+      background-image: conic-gradient(
+          hsl(0, 100%, 50%) 0,
+          hsl(90, 100%, 50%) 90deg,
+          hsl(180, 100%, 50%) 180deg,
+          hsl(270, 100%, 50%) 270deg,
+          hsl(360, 100%, 50%) 360deg);
+    }
+
+    .conic--transform {
+      /* 30degをグラデーションの開始位置、100px, 100pxを円錐の中心とする。 */
+      background: conic-gradient(from 45deg at 100px 100px, blue, red);
+    }
+
+    .conic--repeat {
+      background-image: repeating-conic-gradient(
+          hsl(177, 100%, 50%) 0,
+          hsl(232, 100%, 50%) 10%,
+          hsl(177, 100%, 50%) 20%);
+    }
+
+    .conic--graph {
+      width: 200px;
+      border-radius: 100%;
+      background-image: conic-gradient(
+          #f11a50 0,
+          #f11a50 65%,
+          #7cef00 65%,
+          #7cef00 90%,
+          #00dbd9 90%,
+          #00dbd9 100%);
+      position: relative;
+    }
+
+    .conic--graph::before {
+      display: block;
+      content: '';
+      width: 100px;
+      height: 100px;
+      border-radius: 100%;
+      background-color: #fff;
+      position: absolute;
+      inset: 0;
+      margin: auto;
+    }
+
+    .conic--plaid {
+      background: repeating-conic-gradient(
+          white 0,
+          white 25%,
+          #cbcbcb 25%,
+          #cbcbcb 50%)
+          center center / 20px 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="box linear"></div>
+  <div class="box radial"></div>
+  <div class="box conic"></div>
+  <div class="box conic--rainbow"></div>
+  <div class="box conic--transform"></div>
+  <div class="box conic--repeat"></div>
+  <div class="box conic--graph"></div>
+  <div class="box conic--plaid"></div>
+</body>
+
+</html>

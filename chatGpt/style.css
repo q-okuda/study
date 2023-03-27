@@ -1,0 +1,75 @@
+/* 選択された色を表示するための要素 */
+#selected-color {
+  width: 50px;
+  height: 50px;
+  border: 1px solid black;
+  margin: 10px;
+}
+
+/* 色の選択肢を表示するための要素 */
+#color-palette {
+  display: flex;
+  margin: 10px;
+}
+
+/* 色の選択肢の1つ */
+#color-palette .color {
+  width: 50px;
+  height: 50px;
+  border: 1px solid black;
+  margin: 5px;
+}
+
+/* 赤色の選択肢 */
+#color-palette .color[data-color="red"] {
+  background-color: red;
+}
+
+/* オレンジ色の選択肢 */
+#color-palette .color[data-color="orange"] {
+  background-color: orange;
+}
+
+/* 黄色の選択肢 */
+#color-palette .color[data-color="yellow"] {
+  background-color: yellow;
+}
+
+/* 緑色の選択肢 */
+#color-palette .color[data-color="green"] {
+  background-color: green;
+}
+
+/* 青色の選択肢 */
+#color-palette .color[data-color="blue"] {
+  background-color: blue;
+}
+
+/* 藍色の選択肢 */
+#color-palette .color[data-color="indigo"] {
+  background-color: indigo;
+}
+
+/* 紫色の選択肢 */
+#color-palette .color[data-color="violet"] {
+  background-color: violet;
+}
+
+/* 塗り絵を表示するための要素 */
+#painting {
+  width: 100%;
+  height: 400px;
+  margin: 10px 0;
+}
+
+/* 塗り絵のpath要素 */
+#painting path {
+  fill: white;
+  stroke: black;
+  stroke-width: 2;
+}
+
+/* 保存ボタン */
+#save-button {
+  margin: 10px;
+}

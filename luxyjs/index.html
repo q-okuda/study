@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>luxy.js</title>
+</head>
+
+<body>
+  <ul class="anchorList">
+    <li><a href="#anchor1" class="js-anchor">アンカー１</a></li>
+    <li><a href="#anchor2" class="js-anchor">アンカー２</a></li>
+    <li><a href="#anchor3" class="js-anchor">アンカー３</a></li>
+  </ul>
+  <div id="js-luxy">
+    <div id="anchor1" class="box red"></div>
+    <div id="anchor2" class="flex">
+      <div class="box blue"></div>
+      <div class="box green js-luxyEl" data-speed-y="10"></div>
+    </div>
+    <div id="anchor3" class="flex">
+      <div class="box orange js-luxyEl" data-horizontal="1" data-speed-x="-10"></div>
+      <div class="box brown"></div>
+      <div class="box yellow js-luxyEl" data-horizontal="1" data-speed-x="10"></div>
+    </div>
+  </div>
+  <!-- オプション -->
+  <!-- 
+    data-offset ページ読み込み時の初期値を変更する属性
+
+    data-speed-x
+    スクロールした時の横軸の移動速度。
+    同時にdata-horizontal="1"指定が必要。
+
+    data-speed-y
+    スクロールした時の横軸の移動速度。
+  -->
+  <script src="./luxy.min.js"></script>
+  <script>
+    ((d, w) => {
+      luxy.init({
+        wrapper: '#js-luxy', //慣性スクロールを包括する要素のID
+        // ※wrapperに指定した要素はposition:fixedがかかる。
+        targets: '.js-luxyEl', //パララックスの要素のclass名
+        wrapperSpeed: 0.05 //慣性スクロールスピード
+      });
+
+      const anchor = d.querySelectorAll('.js-anchor');
+      anchor.forEach((el) => {
+        const targetId = el.getAttribute('href');
+        const targetEl = d.querySelector(targetId);
+        const targetPos = targetEl.getBoundingClientRect().top;
+        el.addEventListener('click', () => {
+          scrollTo(0, targetPos);
+        });
+
+        // el.onclick = () => { scrollBy(0, 500); };
+      });
+    })(document, window);
+  </script>
+</body>
+
+</html>

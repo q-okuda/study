@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>async + await</title>
+</head>
+
+<body>
+  <script>
+    // Async関数
+    // 関数は常にpromiseを返す。 コード中に return <非promise> がある場合、JSは自動的にその値を持つ解決されたpromiseにラップする。
+    async function f1() {
+      return 1;
+    }
+    f1().then(alert);
+
+    // 明示的にpromiseを返す記載の場合。
+    async function f2() {
+      return Promise.resolve(1);
+    }
+    f2().then(alert);
+
+
+    // Await
+    // awaitはpromiseが確定しその結果を返すまで、JSを待機させる。
+    // async関数内でしかawaitは動作しない。
+    async function f3() {
+      let promise = new Promise((resolve, reject) => {
+        setTimeout(() => resolve('done'), 1000);
+      });
+
+      let result = await promise; // promiseが解決すまで一時停止。
+
+      alert(result);
+    }
+    f3();
+
+
+    // エラー処理
+    // try..catchでエラーをキャッチできる。
+    async function f4() {
+      try {
+        let response = await fetch('http://no-such-url');
+        let user = await response.json();
+      } catch (err) {
+        // fetch と response.json 両方のエラーをキャッチ
+        alert(err);
+      }
+    }
+    f4();
+
+    // try...catchはオーバーヘッドが大きいため多用は注意。
+  </script>
+</body>
+
+</html>

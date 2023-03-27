@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>stringLength</title>
+</head>
+
+<body>
+  <h1>stringLength</h1>
+  <input type="text" maxlength="5">
+</body>
+<script>
+  // jsの文字列の内部エンコードはUTF-16。
+  // UTF-16にはサロゲートペアという仕組みがある。
+  // 1文字（1コードポイント）を複数の符号（コードユニット）で表現する。
+  // 例）「あ」・・・1コードポイント、1コードユニット
+  // 例）「🍎」・・・１コードポイント、2コードユニット
+  // String.prototype.lengthはコードユニットを数え数えている。
+  console.log("あ".length); //=> 1
+  console.log("🍎".length); //=> 2
+  console.log("𩸽".length); //=> 2
+  // ※2コードユニット使う漢字も存在する。
+
+  // 見た目のままカウントしたい！ →スプレッド演算子を使用。
+  // スプレッド演算子「...」・・・配列やオブジェクトを展開して配列に格納する。
+  // （https://qiita.com/akisx/items/682a4283c13fe336c547）
+  console.log([..."abc"]); //=> [ 'a', 'b', 'c' ]
+  // このやり方でコードポイント単位で区切ることができる。
+  // したがって、一旦文字列を配列化し、その要素数を数えれば、サロゲートペアかどうかを考慮する必要はなくなる。
+  console.log([..."あ"].length); //=> 1
+  console.log([..."🍎"].length); //=> 1
+  console.log([..."𩸽"].length); //=> 1
+
+  // ところがどっこい・・・
+  console.log([..."🏴󠁧󠁢󠁥󠁮󠁧󠁿"].length); //=> 7
+  // この絵文字はどうやら7つのコードポイントが組み合わさって表示されているっぽい。。。
+  console.log([..."🇯🇵"].length); //=> 2
+  // 日本国旗も。。。
+  // 絵文字には、コードポイントを組み合わせて、1つの絵文字を成すものがあるらしい。
+
+  // じゃあどうする？
+  // Intl.Segmenterを使用。
+  // 文字列を書記素や単語、文に分解できるAPI。（FireFox、IEには非対応。）
+  // 文字列を書記素単位に分解するには、Intl.Segmenterクラスのgranularityオプションにgraphemeを指定。
+  const segmenter = new Intl.Segmenter("ja", { granularity: "grapheme" });
+  console.log([...segmenter.segment("あいうえお")]);
+  //=>
+  // [
+  //   { segment: 'あ', index: 0, input: 'あいうえお' },
+  //   { segment: 'い', index: 1, input: 'あいうえお' },
+  //   { segment: 'う', index: 2, input: 'あいうえお' },
+  //   { segment: 'え', index: 3, input: 'あいうえお' },
+  //   { segment: 'お', index: 4, input: 'あいうえお' }
+  // ]
+
+  // 関数定義で使いやすく。
+  function countGrapheme(string) {
+    const segmenter = new Intl.Segmenter("ja", { granularity: "grapheme" });
+    return [...segmenter.segment(string)].length;
+  }
+
+  // Intl.Segmenterはサロゲートペアや絵文字の合成も考慮しているので、より正確な文字数がカウントできる。
+  console.log(countGrapheme("あ")); //=> 1
+  console.log(countGrapheme("🍎")); //=> 1
+  console.log(countGrapheme("𩸽")); //=> 1
+  console.log(countGrapheme("🏴󠁧󠁢󠁥󠁮󠁧󠁿")); //=> 1
+  console.log(countGrapheme("🇯🇵")); //=> 1
+  console.log(countGrapheme("👨🏻‍💻")); //=> 1
+
+  // ただ、FireFox、IEでは未対応なので絵文字を使われたくないのなら絵文字禁止で実装した方が良い。
+
+  // https://qiita.com/suin/items/3da4fb016728c024eaca
+  // https://qiita.com/akisx/items/682a4283c13fe336c547
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Segmenter
+  // https://iwb.jp/javascript-remove-form-input-textarea-emoji/
+</script>
+
+</html>

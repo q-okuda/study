@@ -1,0 +1,53 @@
+section {
+  width: 500px;
+  margin: 0 auto;
+}
+
+.line {
+  padding: 10px 0;
+  border-image: linear-gradient(0deg, #1095c1 5px, #0000 0) fill 0 / auto / 0
+    100vw 0 1em;
+}
+
+.bg {
+  padding: 10px 0;
+  border-image: linear-gradient(90deg, #053547 60%, transparent 90%) fill 0 /
+    auto / 0 50px 0 100vw;
+  color: #fff;
+}
+
+.bg.mod-01 {
+  padding: 1em 0;
+  border-image: linear-gradient(#fcddd0, #fcddd0) fill 0 / auto / 0 50px 0 100vw;
+  text-align: justify;
+  color: #000;
+}
+
+.bg.mod-02 {
+  padding: 1em 0;
+  border-image: linear-gradient(#fcddd0, #fcddd0) fill 0 / auto / 0 100vw 0 50px;
+  text-align: justify;
+  color: #000;
+}
+
+/*
+■border-image
+指定された要素の周りに画像を描く。
+border-image-source border-image-slice / border-image-width / border-image-outset border-image-repeatの順で指定
+以下プロパティの一括指定。
+
+■border-image-outset
+要素の境界画像が境界ボックスからはみ出す幅。
+
+■border-image-repeat
+元画像の辺の領域を、どうやって要素の境界画像に合うように合わせるかを定義。
+
+■border-image-slice
+border-image-sourceで指定された画像を複数の領域に分割。
+
+■border-image-source
+要素の境界画像に使われる元の画像を設定。
+
+■border-image-width
+要素の境界画像の幅を設定。
+*/

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <!-- <meta http-equiv="Refresh" content="0; URL=http://localdev.com/study/perspective/"> -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>canvas</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="js-iceCanvas" width="" height="" style="border: 1px solid #000;">
+    図形を表示するには、canvasタグをサポートしたブラウザが必要です。
+  </canvas>
+  <button type="button" id="js-btn">
+    画像生成
+  </button>
+  <div style="width:300px;">
+    <img id="newImg">
+  </div>
+  <a id="js-download">ダウンロード</a>
+
+  <div class="container">
+    <!-- canvasはデフォで幅300px、高さ150px -->
+    <canvas id="sample01" width="" height="">
+      図形を表示するには、canvasタグをサポートしたブラウザが必要です。
+    </canvas>
+  </div>
+  <canvas id="js-canvas01"></canvas>
+  <canvas id="js-canvas02"></canvas>
+  <script src="script.js"></script>
+</body>
+
+</html>
