@@ -63,10 +63,10 @@
     video.id = 'video';
     video.width = cameraSize.w;
     video.height = cameraSize.h;
-    video.autoplay = true;
 
     // video要素にWebカメラの映像を表示させる
     function renderWebcamStream() {
+      video.play();
       media = navigator.mediaDevices.getUserMedia({
         audio: false,
         video: {
@@ -102,16 +102,17 @@
 
     // canvas描画
     function canvasUpdate() {
-      reCanvasCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      canvasCtx.drawImage(reCanvas, 0, 0, canvas.width, canvas.height);
+      // reCanvasCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      canvasCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
       imgs.forEach((img) => {
         canvasCtx.drawImage(img, 0, 0, canvas.width, canvas.height);
       });
+      console.log('test');
       requestAnimationFrame(canvasUpdate);
     };
 
     startCamera.addEventListener('click', () => {
-      startCamera.disabled = true;
+      // startCamera.disabled = true;
       renderWebcamStream();
       canvasUpdate();
     });
