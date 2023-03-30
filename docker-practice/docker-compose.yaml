@@ -1,0 +1,43 @@
+version: '3.9'
+
+services:
+  nginx-sample:
+    container_name: sample-nginx
+    build:
+      dockerfile: ./nginx/Dockerfile
+    ports:
+      - '80:80'
+    volumes: 
+      - ./root:/usr/share/nginx/html
+      - ./nginx/settings/default.conf:/etc/nginx/conf.d/default.conf
+    working_dir: /usr/share/nginx/html
+
+  php-sample:
+    container_name: sample-php
+    build:
+      dockerfile: ./php/Dockerfile
+    volumes: 
+      - ./root:/usr/share/nginx/html
+    working_dir: /usr/share/nginx/html
+
+  db-sample:
+    image: mysql:5.7
+    platform: linux/amd64
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+    volumes:
+      - ./db/volume:/var/lib/mysql
+
+  phpmyadmin-sample:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=db-sample
+      - PMA_USER=root
+      - PMA_PASSWORD=rootpassword
+    links:
+      - db-sample
+    ports:
+      - 3000:80
+    volumes:
+      - ./phpmyadmin/sessions:/sessions
