@@ -102,17 +102,16 @@
 
     // canvas描画
     function canvasUpdate() {
-      // reCanvasCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      canvasCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      reCanvasCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      canvasCtx.drawImage(reCanvas, 0, 0, canvas.width, canvas.height);
       imgs.forEach((img) => {
         canvasCtx.drawImage(img, 0, 0, canvas.width, canvas.height);
       });
-      console.log('test');
       requestAnimationFrame(canvasUpdate);
     };
 
     startCamera.addEventListener('click', () => {
-      // startCamera.disabled = true;
+      startCamera.disabled = true;
       renderWebcamStream();
       canvasUpdate();
     });
