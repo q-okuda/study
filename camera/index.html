@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>camera</title>
+  <style>
+    video,
+    canvas {
+      border: 1px solid #000;
+    }
+
+    #videoPreview {
+      width: 325px;
+      height: 325px;
+    }
+
+    #output {
+      display: block;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>camera</h1>
+
+  <div>
+    <p>canvas preview</p>
+    <div id="canvasPreview"></div>
+  </div>
+
+
+  <button type="button" id="startCamera">カメラ起動</button>
+  <button type="button" id="shoot">撮影</button>
+
+  <output id="output"></output>
+
+  <script>
+    const w = window;
+    const d = document;
+    const cameraSize = { w: 325, h: 325 };
+    const canvasSize = { w: 325, h: 325 };
+    const resolution = { w: 325, h: 325 };
+    let video;
+    let media;
+    let canvas;
+    let canvasCtx;
+
+    let imgs = ['psycho.png'];
+    imgs = imgs.map((path, index) => {
+      const img = new Image();
+      img.src = path;
+      return img;
+    });
+
+    const startCamera = d.getElementById('startCamera');
+
+    // video要素
+    video = d.createElement('video');
+    video.id = 'video';
+    video.width = cameraSize.w;
+    video.height = cameraSize.h;
+    video.autoplay = true;
+
+    // video要素にWebカメラの映像を表示させる
+    function renderWebcamStream() {
+      media = navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+          width: { ideal: resolution.w },
+          height: { ideal: resolution.h }
+        }
+      }).then(function (stream) {
+        video.srcObject = stream;
+      });
+    }
+
+    // 反転用canvas
+    let reCanvas;
+    reCanvas = d.createElement('canvas');
+    reCanvas.id = 'reCanvas';
+    reCanvas.width = canvasSize.w;
+    reCanvas.height = canvasSize.h;
+
+    reCanvasCtx = reCanvas.getContext('2d');
+
+    // videoを反転
+    reCanvasCtx.scale(-1, 1);
+    reCanvasCtx.translate(-reCanvas.width, 0);
+
+    // 出力用canvas
+    canvas = d.createElement('canvas');
+    canvas.id = 'canvas';
+    canvas.width = canvasSize.w;
+    canvas.height = canvasSize.h;
+    d.getElementById('canvasPreview').appendChild(canvas);
+
+    canvasCtx = canvas.getContext('2d');
+
+    // canvas描画
+    function canvasUpdate() {
+      reCanvasCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      canvasCtx.drawImage(reCanvas, 0, 0, canvas.width, canvas.height);
+      imgs.forEach((img) => {
+        canvasCtx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      });
+      requestAnimationFrame(canvasUpdate);
+    };
+
+    startCamera.addEventListener('click', () => {
+      startCamera.disabled = true;
+      renderWebcamStream();
+      canvasUpdate();
+    });
+
+    const shoot = d.getElementById('shoot');
+    const output = d.getElementById('output');
+    shoot.addEventListener('click', () => {
+      const base64 = canvas.toDataURL('image/jpeg');
+      const img = d.createElement('img');
+      img.src = base64;
+      output.appendChild(img);
+    });
+
+  </script>
+</body>
+
+</html>
