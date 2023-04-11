@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>svg-animation</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+
+    body {
+      width: 100vw;
+      height: 500vh;
+    }
+
+    .topSection {
+      height: 100vh;
+      background-image: repeating-linear-gradient(0deg, transparent, transparent 50px, rgb(252, 169, 169) 50px, rgb(252, 169, 169) 100px);
+    }
+
+    .svgContainer {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      background-image: repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(230, 230, 230, 1) 50px, rgba(230, 230, 230, 1) 100px);
+      overflow: hidden;
+    }
+
+    .svgWrap {
+      width: 150%;
+      /* position: fixed; */
+      /* position: absolute; */
+      /* top: 50%;
+      left: 0;
+      transform: translate(0, -50%); */
+    }
+
+    /* @media screen and (min-width: 768px) {
+      .svgWrap {
+        width: 120%;
+      }
+    }
+
+    @media screen and (min-width: 1400px) {
+      .svgWrap {
+        width: 100%;
+      }
+    } */
+
+    .cls-1 {
+      fill: none;
+      stroke: #ff0000;
+      stroke-miterlimit: 10;
+      stroke-width: 5px;
+      /* fill: #ff0000; */
+    }
+
+    .circle1 {
+      transform: translate(189px, 92px);
+      fill: #ff0000;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .circle2 {
+      transform: translate(623px, 73px);
+      fill: #ff0000;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .circle3 {
+      transform: translate(1180px, 0px);
+      fill: #ff0000;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .dot {
+      fill: #000000;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/MotionPathPlugin.min.js"></script>
+</head>
+
+<body>
+  <div class="topSection"></div>
+  <div class="svgContainer">
+    <div class="svgWrap" id="js-svgWrap">
+      <svg class="svg" viewBox="0 0 1832.52 367.44">
+        <path id="js-line" class="cls-1"
+              d="m1.15,247.07c23.06,16.18,59.15,38.3,107,55,50.85,17.75,163.77,57.17,251,1,49.7-32,104.98-104,81-158-23.47-52.85-111.4-62.7-169-43-28.77,9.84-80.58,37.53-82,78-.28,8,1.27,56.21,56.5,97.5,56.36,42.13,118.88,40.75,197.5,52.5,78.35,11.71,170.97,25.55,286-6,73.57-20.18,179.84-49.33,188-114,7.2-57.04-63.16-131.94-144-135-73.16-2.77-147.75,53.57-148,105-.4,84.6,200.37,157.51,336,178,194.65,29.41,330.35-37.79,356-51,64.87-33.43,173.35-89.32,168-170-5.16-77.82-114.71-155.93-200-130-60.54,18.4-111.4,89.99-102,152,20.21,133.23,318.16,219.01,553,204,40.14-2.57,73.25-7.74,96-12" />
+        <path id="js-circle1" class="circle1"
+              d="m251.02,52.4C227.56-.45,139.62-10.3,82.02,9.4,53.25,19.25,1.44,46.94.02,87.4c-.28,8,1.27,56.21,56.5,97.5,28.32,21.17,58.21,31.36,90.9,37.74,7.68-3.45,15.23-7.5,22.6-12.24,49.7-32,104.98-104,81-158Z" />
+        <path id="js-circle2" class="circle2"
+              d="m294,137.1C301.2,80.06,230.84,5.16,150,2.1,76.84-.67,2.25,55.67,2,107.1c-.24,50,69.8,95.91,155.12,129.34,63.91-19.83,130.49-48.69,136.88-99.34Z" />
+        <path id="js-circle3" class="circle3"
+              d="m305.13,137.07C299.97,59.25,190.41-18.86,105.13,7.07,44.59,25.47-6.28,97.06,3.13,159.07c8.57,56.53,67.15,104.51,149.69,139.88,65.21-34.06,157.25-87.41,152.31-161.88Z" />
+        <circle id="js-dot" class="dot" cx="10" cy="10" r="10"></circle>
+      </svg>
+    </div>
+  </div>
+  <script>
+    ((d, w) => {
+      // w.addEventListener('load', () => {
+      //   function calcProgress() {
+      //     const scrollAmount = d.documentElement.scrollTop;
+      //     const hiddenHeight = d.documentElement.scrollHeight - d.documentElement.clientHeight;
+      //     const progress = scrollAmount / hiddenHeight;
+      //     console.log({progress});
+      //     return progress;
+      //   }
+      //   calcProgress();
+      //   w.addEventListener('scroll', calcProgress);
+
+      //   const svgWrap = d.getElementById('js-svgWrap');
+      //   let windowWidth = innerWidth;
+      //   let svgWrapWidth = svgWrap.offsetWidth;
+      //   let svgHiddenWidth = svgWrapWidth - windowWidth;
+
+      //   w.addEventListener('resize', ()=>{
+      //     windowWidth = innerWidth;
+      //     svgWrapWidth = svgWrap.offsetWidth;
+      //     svgHiddenWidth = svgWrapWidth - windowWidth;
+      //     drawLine();
+      //   });
+
+      //   const line = d.getElementById('js-line');
+      //   const lineLength = line.getTotalLength();
+      //   line.style.strokeDasharray = lineLength + 'px';
+      //   line.style.strokeDashoffset = lineLength + 'px';
+
+      //   const circle1 = d.getElementById('js-circle1');
+      //   const circle2 = d.getElementById('js-circle2');
+      //   const circle3 = d.getElementById('js-circle3');
+
+      //   // ドットの位置移動
+      //   const dot = d.getElementById('js-dot');
+      //   function updateDotPos(progress) {
+      //     const {x, y} = line.getPointAtLength(lineLength * progress);
+      //     dot.setAttribute('cx', x);
+      //     dot.setAttribute('cy', y);
+      //   }
+
+      //   // 開始地点の変数
+      //   const startScrollXProgress = 0.25;
+      //   const start1stCircleFill = 0.254;
+      //   const start2ndCircleFill = 0.542;
+      //   const start3rdCircleFill = 0.884;
+
+      //   function calcAnimationProgress(start) {
+      //     return Math.max(0, Math.min(1, (calcProgress() - start) / (1 - start)));
+      //   };
+
+      //   function drawLine() {
+      //     line.style.strokeDashoffset = lineLength - lineLength * calcProgress() + 'px';
+
+      //     updateDotPos(calcProgress());
+
+      //     // 横スクロール
+      //     if(calcProgress() >= startScrollXProgress) {
+      //       svgWrap.style.transform = `translate(${svgHiddenWidth * calcAnimationProgress(startScrollXProgress) * -1}px, -50%)`;
+      //     }
+
+      //     // ひとつ目の円着色
+      //     if (calcProgress() >= start1stCircleFill) {
+      //       circle1.style.opacity = '1';
+      //     } else {
+      //       circle1.style.opacity = '0';
+      //     }
+
+      //     // ふたつ目の円着色
+      //     if (calcProgress() >= start2ndCircleFill) {
+      //       circle2.style.opacity = '1';
+      //     } else {
+      //       circle2.style.opacity = '0';
+      //     }
+
+      //     // みっつ目の円着色
+      //     if (calcProgress() >= start3rdCircleFill) {
+      //       circle3.style.opacity = '1';
+      //     } else {
+      //       circle3.style.opacity = '0';
+      //     }
+      //   };
+
+
+      //   function animation() {
+      //     drawLine();
+      //     requestAnimationFrame(animation);
+      //   }
+      //   animation();
+      // });
+      w.addEventListener('load', () => {
+        const svgWrap = d.getElementById('js-svgWrap');
+
+        const line = d.getElementById('js-line');
+        const lineLength = line.getTotalLength();
+        line.style.strokeDasharray = lineLength + 'px';
+        line.style.strokeDashoffset = lineLength + 'px';
+
+        const circle1 = d.getElementById('js-circle1');
+        const circle2 = d.getElementById('js-circle2');
+        const circle3 = d.getElementById('js-circle3');
+
+        const dot = d.getElementById('js-dot');
+        function updateDotPos(progress) {
+          const { x, y } = line.getPointAtLength(lineLength * progress);
+          dot.setAttribute('cx', x);
+          dot.setAttribute('cy', y);
+        }
+
+        function calcAnimationProgress(start) {
+          return Math.max(0, Math.min(1, (calcProgress() - start) / (1 - start)));
+        };
+
+        // 横スクロール
+        // if (calcProgress() >= startScrollXProgress) {
+        //   svgWrap.style.transform = `translate(${svgHiddenWidth * calcAnimationProgress(startScrollXProgress) * -1}px, -50%)`;
+        // }
+
+        let windowWidth = innerWidth;
+        let svgWrapWidth = svgWrap.offsetWidth;
+        let svgHiddenWidth = svgWrapWidth - windowWidth;
+
+        w.addEventListener('resize', () => {
+          windowWidth = innerWidth;
+          svgWrapWidth = svgWrap.offsetWidth;
+          svgHiddenWidth = svgWrapWidth - windowWidth;
+        });
+
+        const pc = 768;
+        const pcMax = 1400;
+
+        const drawLine = gsap.timeline({
+          scrollTrigger: {
+            trigger: svgWrap,
+            start: 'center center', // 'trigger, browser'
+            end: '+=2000', //アニメーション開始位置から2000px固定する
+            scrub: true, //スクロール量に合わせてアニメーションが進む（数字も指定できる）
+            pin: true, //トリガー要素を固定する
+            markers: true,
+            onUpdate: (self) => {
+              const progress = self.progress;
+              // console.log(progress);
+              if (progress >= 0.14) {
+                circle1.style.opacity = '1';
+              } else {
+                circle1.style.opacity = '0';
+              }
+
+              if (progress >= 0.32) {
+                circle2.style.opacity = '1';
+              } else {
+                circle2.style.opacity = '0';
+              }
+
+              if (progress >= 0.66) {
+                circle3.style.opacity = '1';
+              } else {
+                circle3.style.opacity = '0';
+              }
+            }
+          }
+        });
+
+        drawLine
+          .to(line, {
+            strokeDashoffset: 0,
+          })
+          .to(dot, {
+            motionPath: {
+              path: line,
+              align: line,
+              alignOrigin: [0.5, 0.5]
+            }
+          }, 0)
+          .to(svgWrap, {
+            xPercent: () => {
+              let x;
+              if (windowWidth >= pcMax) {
+                x = 0;
+              } else {
+                x = svgHiddenWidth / svgWrapWidth * -100;
+              }
+              console.log(x);
+              return x;
+            },
+          }, 0.1);
+      });
+    })(document, window);
+  </script>
+</body>
+
+</html>

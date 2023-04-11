@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the WordPress - 6.2.x - Development - Administration package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-03-27 13:04:35+0000\n"
+"PO-Revision-Date: 2023-03-30 13:21:15+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -651,6 +651,10 @@ msgstr "重要: お使いの WordPress バージョン (%1$s) では、近い将
 #: wp-admin/about.php:334
 msgid "Important! Your version of WordPress (%1$s) is no longer supported, you will not receive any security updates for your website. To keep your site secure, please <a href=\"%2$s\">update to the latest version of WordPress</a>."
 msgstr "重要: お使いの WordPress バージョン (%1$s) はサポートされなくなったため、サイトでセキュリティ更新プログラムを受け取ることができません。サイトを安全に保つため、<a href=\"%2$s\">最新バージョンの WordPress に更新</a>してください。"
+
+#: wp-admin/about.php:249
+msgid "https://make.wordpress.org/core/2023/03/09/wordpress-6-2-field-guide/"
+msgstr "https://make.wordpress.org/core/2023/03/09/wordpress-6-2-field-guide/"
 
 #. translators: 1: WordPress Release Notes link, 2: WordPress version number.
 #: wp-admin/about.php:266
