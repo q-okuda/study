@@ -74,6 +74,10 @@
     }
 
     .txt {
+      /* display: flex; */
+      /* flex-direction: column; */
+      /* justify-content: center; */
+      /* align-items: center; */
       margin: 0 auto;
       writing-mode: vertical-rl;
       z-index: 1;
@@ -83,11 +87,21 @@
 
     .txt>span {
       display: inline-block;
-      font-size: 1.8vh;
+      font-size: 2.7vh;
     }
 
-    .txt>.mod-horizontal {
-      writing-mode: horizontal-tb;
+    .txt>.mod-img {
+      position: relative;
+      width: 100%;
+      height: 22vh;
+    }
+
+    .mod-img>img {
+      width: auto;
+      height: 100%;
+      position: absolute;
+      left: 50%;
+      transform: translate(-31%, 0);
     }
 
     .pc {
@@ -195,10 +209,9 @@
         <span class="js-letter">な</span>
         <span class="js-letter">た</span>
         <span class="js-letter">の</span>
-        <span class="js-letter mod-horizontal">W</span>
-        <span class="js-letter mod-horizontal">E</span>
-        <span class="js-letter mod-horizontal">B</span>
-        <span class="js-letter mod-horizontal">の</span>
+        <span class="js-letter mod-img">
+          <img src="./txt1.png" alt="">
+        </span>
         <span class="js-letter">お</span>
         <span class="js-letter">悩</span>
         <span class="js-letter">み</span>
@@ -311,14 +324,18 @@
           .to(fig, {
             yPercent: 0,
             duration: 4,
-          }, 2)
+          })
           .to(txt, {
-            yPercent: 10,
+            y: ()=>{ return -pcFig.offsetHeight},
+            duration: 4,
+          }, '<')
+          .to(txt, {
+            yPercent: 20,
             duration: 3,
           })
           .to(letter, {
             y: () => { return windowHeight * 0.5; },
-            autoAlpha: 0,
+            // autoAlpha: 0.5,
             rotate: 360,
             scale: 0,
             duration: 4,
