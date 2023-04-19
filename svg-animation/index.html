@@ -14,7 +14,6 @@
 
     body {
       width: 100vw;
-      /* height: 500vh; */
     }
 
     img {
@@ -36,28 +35,32 @@
     .eyesSection {
       width: 100%;
       height: 100vh;
-      padding-top: 10%;
+      position: relative;
     }
 
     .eyesWrap {
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
-      width: 700px;
-      background-color: grey;
+      width: 50%;
+      max-width: 500px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
 
     .eyeOuter {
       width: 45%;
       aspect-ratio: 1 / 1.1;
-      border: 1px solid #000;
+      border: 2px solid #000;
       border-radius: 100%;
       position: relative;
       overflow: hidden;
     }
 
     .eye {
-      width: 30%;
+      width: 35%;
       aspect-ratio: 1 / 1.1;
       border-radius: 100%;
       background-color: #000;
@@ -66,6 +69,87 @@
       left: 50%;
       transform: translate(-50%, -50%);
       transition: transform 0.1s, width 0.2s;
+    }
+
+    .add-lookBubble .eye {
+      transition: transform 0.7s, width 0.2s;
+    }
+
+    .bubble {
+      width: 25%;
+      padding-top: 15%;
+      border: 1px solid #aaa;
+      border-radius: 100%;
+      position: absolute;
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(0);
+      transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+    }
+
+    .bubble.add-show {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1);
+    }
+
+    .bubble1 {
+      top: 8%;
+      left: 8%;
+    }
+
+    .bubble2 {
+      top: 8%;
+      right: 20%;
+    }
+
+    .bubble3 {
+      bottom: 8%;
+      left: 15%;
+    }
+
+    .bubble4 {
+      bottom: 15%;
+      right: 16%;
+    }
+
+    .bubble5 {
+      top: 31%;
+      left: 1%;
+    }
+
+    .bubble6 {
+      bottom: 32%;
+      right: 1%;
+    }
+
+    .bubble>.bubble_child1 {
+      width: 25%;
+      padding-top: 10%;
+      background-color: #fff;
+      border: 1px solid #aaa;
+      border-radius: 100%;
+      position: absolute;
+      top: 103%;
+      left: 56%;
+    }
+
+    .bubble>.bubble_child2 {
+      width: 5%;
+      padding-top: 5%;
+      background-color: #fff;
+      border: 1px solid #aaa;
+      border-radius: 100%;
+      position: absolute;
+      top: 123%;
+      left: 74%;
+    }
+
+    .toggleBtn {
+      padding: 0 5px;
+      position: absolute;
+      bottom: 1%;
+      right: 1%;
     }
 
     .txtSection {
@@ -192,7 +276,7 @@
 
 <body>
   <main class="contents">
-    <div class="eyesSection">
+    <div id="js-eyesSection" class="eyesSection">
       <div id="js-eyesWrap" class="eyesWrap">
         <div class="eyeOuter left">
           <div id="js-leftEye" class="eye"></div>
@@ -201,6 +285,31 @@
           <div id="js-rightEye" class="eye"></div>
         </div>
       </div>
+      <div class="bubble bubble1 js-bubble">
+        <div class="bubble_child1"></div>
+        <div class="bubble_child2"></div>
+      </div>
+      <div class="bubble bubble2 js-bubble">
+        <div class="bubble_child1"></div>
+        <div class="bubble_child2"></div>
+      </div>
+      <div class="bubble bubble3 js-bubble">
+        <div class="bubble_child1"></div>
+        <div class="bubble_child2"></div>
+      </div>
+      <div class="bubble bubble4 js-bubble">
+        <div class="bubble_child1"></div>
+        <div class="bubble_child2"></div>
+      </div>
+      <div class="bubble bubble5 js-bubble">
+        <div class="bubble_child1"></div>
+        <div class="bubble_child2"></div>
+      </div>
+      <div class="bubble bubble6 js-bubble">
+        <div class="bubble_child1"></div>
+        <div class="bubble_child2"></div>
+      </div>
+      <button type="button" id="js-toggleBtn" class="toggleBtn">切り替え</button>
     </div>
     <div class="section"></div>
     <div id="js-txtSection" class="txtSection">
@@ -263,42 +372,109 @@
         const pc = 768;
         const pcMax = 1400;
 
+        // 切り替え
+        const toggleBtn = d.getElementById('js-toggleBtn');
+        toggleBtn.addEventListener('click', () => {
+          eyesSection.classList.toggle('add-lookBubble');
+        });
+
+        // 吹き出しアニメーション
+        let bubblePos = { x: 0, y: 0 };
+        const changeBubbleVisible = (el) => {
+          let index = 0;
+          setInterval(() => {
+            el[index].classList.remove('add-show');
+            index++;
+            if (index > el.length - 1) index = 0;
+            el[index].classList.add('add-show');
+            bubblePos = {
+              x: el[index].getBoundingClientRect().left + el[index].offsetWidth / 2,
+              y: el[index].getBoundingClientRect().top + el[index].offsetHeight / 2,
+            };
+            if (eyesSection.classList.contains('add-lookBubble')) {
+              calcEyePos();
+            }
+          }, 2000);
+        };
+
+        const bubbles = [].slice.call(d.querySelectorAll('.js-bubble'));
+        changeBubbleVisible(bubbles);
+
         // 目アニメーション
+        const eyesSection = d.getElementById('js-eyesSection');
         const eyesWrap = d.getElementById('js-eyesWrap');
         const leftEye = d.getElementById('js-leftEye');
         const rightEye = d.getElementById('js-rightEye');
 
+        const abs = amount => {
+          return amount < 0 ? -amount : amount;
+        };
+
         let x;
         let y;
-        w.addEventListener('mousemove', (e) => {
-          const mouse = {
-            x: e.pageX,
-            y: e.pageY,
-          };
+        let eyePosX;
+        let eyePosY;
+
+        const calcEyePos = (e) => {
+          let mouse;
+          if (eyesSection.classList.contains('add-lookBubble')) {
+            mouse = {
+              x: bubblePos.x,
+              y: bubblePos.y,
+            };
+          } else {
+            mouse = {
+              x: e.pageX,
+              y: e.pageY,
+            };
+          }
           const eyesCenter = {
             x: eyesWrap.getBoundingClientRect().left + eyesWrap.offsetWidth / 2,
             y: eyesWrap.getBoundingClientRect().top + eyesWrap.offsetHeight / 2,
           };
           x = Math.floor((eyesCenter.x - mouse.x) / eyesWrap.offsetWidth * 100);
           y = Math.floor((eyesCenter.y - mouse.y) / eyesWrap.offsetHeight * 100);
+
+          const eyeWidth = leftEye.offsetWidth;
+          const eyeHeight = leftEye.offsetHeight;
+
+          const radian = Math.atan2(y, x);
+          const ratioX = eyeWidth * (x / eyeWidth);
+          const ratioY = eyeHeight * (y / eyeHeight);
+          const maxX = eyeWidth * Math.cos(radian);
+          const maxY = eyeHeight * Math.sin(radian);
+          eyePosX = abs(maxX) >= abs(ratioX) ? ratioX : maxX;
+          eyePosY = abs(maxY) >= abs(ratioY) ? ratioY : maxY;
+        };
+
+        w.addEventListener('mousemove', (e) => {
+          if (eyesSection.classList.contains('add-lookBubble')) {
+            return false;
+          }
+          calcEyePos(e);
         });
 
 
         (function updateEyesPos() {
-          leftEye.style.transform = `translate(calc(-50% - ${x}px), calc(-50% - ${y}px))`;
-          rightEye.style.transform = `translate(calc(-50% - ${x}px), calc(-50% - ${y}px))`;
+          leftEye.style.transform = `translate(calc(-50% - ${eyePosX}px), calc(-50% - ${eyePosY}px))`;
+          rightEye.style.transform = `translate(calc(-50% - ${eyePosX}px), calc(-50% - ${eyePosY}px))`;
           requestAnimationFrame(updateEyesPos);
         }
         )();
 
+        w.addEventListener('resize', () => {
+          leftEye.style.transform = `translate(calc(-50% - ${eyePosX}px), calc(-50% - ${eyePosY}px))`;
+          rightEye.style.transform = `translate(calc(-50% - ${eyePosX}px), calc(-50% - ${eyePosY}px))`;
+        });
+
         w.addEventListener('mousedown', () => {
-          leftEye.style.width = '33%';
-          rightEye.style.width = '33%';
+          leftEye.style.width = '38%';
+          rightEye.style.width = '38%';
         });
 
         w.addEventListener('mouseup', () => {
-          leftEye.style.width = '30%';
-          rightEye.style.width = '30%';
+          leftEye.style.width = '35%';
+          rightEye.style.width = '35%';
         });
 
         // テキストアニメーション
@@ -326,7 +502,7 @@
             duration: 4,
           })
           .to(txt, {
-            y: ()=>{ return -pcFig.offsetHeight},
+            y: () => { return -pcFig.offsetHeight; },
             duration: 4,
           }, '<')
           .to(txt, {
@@ -335,8 +511,8 @@
           })
           .to(letter, {
             y: () => { return windowHeight * 0.5; },
-            // autoAlpha: 0.5,
-            rotate: 360,
+            opacity: 0.5,
+            rotate: 90,
             scale: 0,
             duration: 4,
             ease: "power3.in",
@@ -344,7 +520,7 @@
               from: "end",
               each: 1 / letter.length * 2.5,
             }
-          }, '<-0.1')
+          }, '<')
           .to(fig, {
             scale: () => { return windowHeight / pcFig.offsetHeight + 2.5; },
             duration: 3,
