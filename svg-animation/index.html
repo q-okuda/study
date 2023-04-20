@@ -241,7 +241,6 @@
       stroke: #ff0000;
       stroke-miterlimit: 10;
       stroke-width: 5px;
-      /* fill: #ff0000; */
     }
 
     .circle1 {
@@ -268,14 +267,65 @@
     .dot {
       fill: #000000;
     }
+
+    .morphingSection {
+      padding-top: 100px;
+    }
+
+    .glassesWrap {
+      display: flex;
+      justify-content: space-between;
+      width: 50%;
+      position: relative;
+      margin: 0 auto;
+    }
+
+    .glass {
+      width: 46%;
+      transform: rotate(0deg);
+      transform-origin: 50% 42%;
+      position: relative;
+      z-index: 2;
+    }
+
+    .glassPath {
+      fill:#283233;
+    }
+
+    .nosePad {
+      width: 17.7%;
+      top: 37.5%;
+      left: 50.2%;
+      transform: translateX(-50%);
+      position: absolute;
+      z-index: 1;
+    }
+
+    .nosePadPath {
+      fill:#283233;
+    }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/ScrollTrigger.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/MotionPathPlugin.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js"></script>
 </head>
 
 <body>
   <main class="contents">
+    <div class="morphingSection">
+      <div class="glassesWrap">
+        <svg class="glass js-glass" viewBox="0 0 184 207.26">
+          <path id="glassPath_1" class="glassPath" d="m152,88.5c0,33.41-26.86,60.5-60,60.5s-60-27.09-60-60.5,26.86-60.5,60-60.5,60,27.09,60,60.5ZM0,88.5c0,36.38,22.81,67.63,55.43,81.23,10.32,12.3,46.58,50.13,89.57,33.27,3.12-1.49,19.13-8.93,18-18-1-8-11-14-17-10-6,5-16.28,7.96-23,8-7.41.04-12.67-3.37-17-7,45.21-5.6,78-42.49,78-87.5C184,39.62,142.81,0,92,0,61.38,0,34.25,14.39,17.53,36.52,6.5,51.12,0,69.08,0,88.5Z" />
+        </svg>
+        <svg class="nosePad" viewBox="0 0 70.53 32.89">
+          <path class="nosePadPath" d="m68.74,24c-20,20-15.6,0-33,0s-15,19-34,0C-6.86,15.41,18.34,0,35.74,0s41.59,15.41,33,24Z"/>
+        </svg>
+        <svg class="glass js-glass" viewBox="0 0 184 207.26">
+          <path id="glassPath_2" class="glassPath" d="m152,88.5c0,33.41-26.86,60.5-60,60.5s-60-27.09-60-60.5,26.86-60.5,60-60.5,60,27.09,60,60.5ZM0,88.5c0,36.38,22.81,67.63,55.43,81.23,10.32,12.3,46.58,50.13,89.57,33.27,3.12-1.49,19.13-8.93,18-18-1-8-11-14-17-10-6,5-16.28,7.96-23,8-7.41.04-12.67-3.37-17-7,45.21-5.6,78-42.49,78-87.5C184,39.62,142.81,0,92,0,61.38,0,34.25,14.39,17.53,36.52,6.5,51.12,0,69.08,0,88.5Z"/>
+        </svg>
+      </div>
+    </div>
     <div id="js-eyesSection" class="eyesSection">
       <div id="js-eyesWrap" class="eyesWrap">
         <div class="eyeOuter left">
@@ -362,6 +412,7 @@
       </div>
     </div>
     <div class="section"></div>
+
   </main>
   <script>
     ((d, w) => {
@@ -371,6 +422,26 @@
 
         const pc = 768;
         const pcMax = 1400;
+
+        // モーフィング
+        const glassSvgs = [].slice.call(d.querySelectorAll('.js-glass'));
+        const glassPaths = [].slice.call(d.querySelectorAll('.glassPath'));
+        const beforeGlassPath1 = Snap('#glassPath_1');
+        const beforeGlassPath2 = Snap('#glassPath_2');
+        const afterGlassPath = "m152,88.5c0,33.41-26.86,60.5-60,60.5s-60-27.09-60-60.5,26.86-60.5,60-60.5,60,27.09,60,60.5ZM0,88.5c0,36.38,22.81,67.63,55.43,81.23,13.57,4.27,30.95,8.24,50.57,6.27,3-1,54.96-8.79,63-47,4-19-18-6-24-2-6,5-28.28,22.96-35,23-7.41.04-4,26-4,26,45.21-5.6,78-42.49,78-87.5C184,39.62,142.81,0,92,0,61.38,0,34.25,14.39,17.53,36.52,6.5,51.12,0,69.08,0,88.5Z";
+        const duration = 2000;
+        const deg = 360 * 2;
+
+        beforeGlassPath1.animate({d: afterGlassPath}, duration * 0.7);
+        beforeGlassPath2.animate({d: afterGlassPath}, duration * 0.7);
+        glassSvgs.forEach((glassSvg)=>{
+          glassSvg.style.transition = `transform ${duration}ms`;
+          glassSvg.style.transform = `rotate(${deg}deg)`;
+        });
+        glassPaths.forEach((glassPath)=>{
+          glassPath.style.transition = `fill ${duration}ms`;
+          glassPath.style.fill = '#d7000f';
+        });
 
         // 切り替え
         const toggleBtn = d.getElementById('js-toggleBtn');
