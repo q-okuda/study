@@ -297,5 +297,6 @@ img {
 }
 
 .glassesWrap {
+  max-width: 500px;
   transform-origin: center bottom;
 }
