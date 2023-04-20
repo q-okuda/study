@@ -34,23 +34,24 @@
     const rectGlassPath = "m147,144.08H37s0-110.06,0-110.06h110s0,110.06,0,110.06ZM184,0H0s0,178.1,0,178.1h184s0-178.1,0-178.1Z";
     const hexaGlassPath = "m137.99,0l46,89.18-46,89.18H46S0,89.18,0,89.18L46,0h92Zm-73.5,33.96l-27.5,55.2,27.5,55.2h55s27.5-55.2,27.5-55.2l-27.5-55.2h-55Z";
     const circleGlassPath = "m152,88.5c0,33.41-26.86,60.5-60,60.5s-60-27.09-60-60.5,26.86-60.5,60-60.5,60,27.09,60,60.5ZM0,88.5c0,36.38,22.81,67.63,55.43,81.23,13.57,4.27,30.95,8.24,50.57,6.27,3-1,54.96-8.79,63-47,4-19-18-6-24-2-6,5-28.28,22.96-35,23-7.41.04-4,26-4,26,45.21-5.6,78-42.49,78-87.5C184,39.62,142.81,0,92,0,61.38,0,34.25,14.39,17.53,36.52,6.5,51.12,0,69.08,0,88.5Z";
+    const duration2 = 650;
 
-    beforeGlassPath3.animate({ d: rectGlassPath }, duration * 0.4, () => {
-      beforeGlassPath3.animate({ d: hexaGlassPath }, duration * 0.4, () => {
-        beforeGlassPath3.animate({ d: circleGlassPath }, duration * 0.4);
+    beforeGlassPath3.animate({ d: rectGlassPath }, duration2, () => {
+      beforeGlassPath3.animate({ d: hexaGlassPath }, duration2, () => {
+        beforeGlassPath3.animate({ d: circleGlassPath }, duration2);
       });
     });
-    beforeGlassPath4.animate({ d: rectGlassPath }, duration * 0.4, () => {
-      beforeGlassPath4.animate({ d: hexaGlassPath }, duration * 0.4, () => {
-        beforeGlassPath4.animate({ d: circleGlassPath }, duration * 0.4);
+    beforeGlassPath4.animate({ d: rectGlassPath }, duration2, () => {
+      beforeGlassPath4.animate({ d: hexaGlassPath }, duration2, () => {
+        beforeGlassPath4.animate({ d: circleGlassPath }, duration2);
       });
     });
     glassSvgs2.forEach((glassSvg) => {
-      glassSvg.style.transition = `transform ${duration}ms`;
-      glassSvg.style.transform = `rotate(${deg}deg)`;
+      glassSvg.style.transition = `transform ${duration2 * 3}ms`;
+      glassSvg.style.transform = `rotate(360deg)`;
     });
     glassPaths2.forEach((glassPath) => {
-      glassPath.style.transition = `fill ${duration}ms`;
+      glassPath.style.transition = `fill ${duration2 * 3}ms`;
       glassPath.style.fill = '#d7000f';
     });
 
@@ -58,14 +59,14 @@
     const glassesWrap = d.getElementById('js-glassesWrap');
     const glassesAnime = gsap.timeline();
     glassesAnime
-      // .to(glassesWrap, {
-      //   scale: 1.2,
-      //   duration: 0.2,
-      // })
+      .to(glassesWrap, {
+        scale: 1.2,
+        duration: 0.2,
+      })
       .to(glassesWrap, {
         scale: 0,
         duration: 0.2,
-        ease: 'power2',
+        ease: 'power4',
         onComplete: () => { 
           const glasses = [].slice.call(d.querySelectorAll('.js-glassPath3'));
           glasses.forEach((glass)=>{
@@ -77,7 +78,7 @@
       .to(glassesWrap, {
         scale: 1.2,
         duration: 0.2,
-        ease: 'power2',
+        ease: 'power4',
       }, '+=0.2')
       .to(glassesWrap, {
         scale: 1,
