@@ -100,8 +100,8 @@
         if (index > el.length - 1) index = 0;
         el[index].classList.add('add-show');
         bubblePos = {
-          x: el[index].getBoundingClientRect().left + el[index].offsetWidth / 2,
-          y: el[index].getBoundingClientRect().top + el[index].offsetHeight / 2,
+          x: pageXOffset + el[index].getBoundingClientRect().left + el[index].offsetWidth / 2,
+          y: pageYOffset + el[index].getBoundingClientRect().top + el[index].offsetHeight / 2,
         };
         if (eyesSection.classList.contains('add-lookBubble')) {
           calcEyePos();
