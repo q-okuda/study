@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>css shadow</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%),
+        linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%);
+      background-size: 40px 40px;
+      background-position: 0 0, 20px 20px;
+    }
+
+    .flex {
+      display: flex;
+    }
+
+    .obj {
+      margin: 20px;
+      width: 100px;
+      height: 100px;
+      background-color: #fff;
+    }
+
+    .basic1 {
+      box-shadow: 0 10px 25px 0 rgba(0, 0, 0, .5);
+    }
+
+    .basic2 {
+      /* 2. insetで内側に影をつける。角丸や円形もOK */
+      box-shadow: inset 0 10px 25px 0 rgba(0, 0, 0, .5);
+      border-radius: 100%;
+    }
+
+    .basic3 {
+      box-shadow: 0 10px 25px 0 rgba(60, 194, 235, 0.5);
+    }
+
+    .basic4 {
+      box-shadow: 15px 15px 0px 0 rgb(60, 194, 235);
+    }
+
+    /* 1. 6層のbox-shadowで作った滑らかな影 */
+    .layer1 {
+      box-shadow:
+        0 1.9px 2.5px rgba(0, 0, 0, 0.057),
+        0 5px 6.1px rgba(0, 0, 0, 0.076),
+        0 10.1px 11.4px rgba(0, 0, 0, 0.086),
+        0 19.2px 19.8px rgba(0, 0, 0, 0.092),
+        0 38.4px 34.8px rgba(0, 0, 0, 0.1),
+        0 101px 74px rgba(0, 0, 0, 0.13);
+    }
+
+    /* 2. 影ごとに異なる向き・色を適用した例 */
+    .layer2 {
+      box-shadow:
+        -10px 10px 25px rgba(230, 180, 15, 0.9),
+        10px -10px 25px rgba(8, 131, 161, 0.9)
+    }
+
+    /* 3. ぼかさない影を重ねて紙が重なったような表現も */
+    .layer3 {
+      box-shadow:
+        0 20px 0 -10px rgb(198, 224, 231),
+        0 40px 0 -20px rgb(105, 171, 209),
+        0 60px 0 -30px rgb(27, 115, 165)
+    }
+
+    .box {
+      position: relative;
+    }
+
+    .box::after {
+      /* 疑似要素で同じ大きさのboxを作り、position: absoluteで背面に表示 */
+      content: '';
+      display: block;
+      position: absolute;
+      z-index: -1;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+
+      /* ①疑似要素のボックスを影色で塗りつぶし */
+      background-color: rgb(42, 159, 226);
+      /* ②ブラーフィルターでぼかす */
+      filter: blur(15px);
+      /* ③位置やサイズを調整 */
+      transform: translateY(10px) scale(1.05);
+      /* ④乗算で重ねる */
+      mix-blend-mode: multiply;
+    }
+
+    /* 2. Neumorphism */
+    .neumorphism {
+      background-color: rgb(190, 205, 214);
+      padding: 50px;
+    }
+
+    .neumorphism .box {
+      border-radius: 10px;
+    }
+
+    .neumorphism .box,
+    .neumorphism .circle {
+      background-color: rgb(190, 205, 214);
+      transition: box-shadow 0.5s;
+      box-shadow:
+        10px 10px 30px rgba(18, 47, 61, 0.5),
+        -10px -10px 30px rgba(248, 253, 255, 0.9),
+        inset 10px 10px 30px transparent,
+        inset -10px -10px 30px transparent;
+    }
+
+    .neumorphism .box:hover,
+    .neumorphism .circle:hover {
+      box-shadow:
+        10px 10px 30px transparent,
+        -10px -10px 30px transparent,
+        inset 10px 10px 30px rgba(18, 47, 61, 0.5),
+        inset -10px -10px 30px rgba(248, 253, 255, 0.9);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="flex">
+    <div class="obj basic1"></div>
+    <div class="obj basic2"></div>
+    <div class="obj basic3"></div>
+    <div class="obj basic4"></div>
+  </div>
+  <div class="flex">
+    <div class="obj layer1"></div>
+    <div class="obj layer2"></div>
+    <div class="obj layer3"></div>
+  </div>
+  <div class="flex">
+    <div class="obj box"></div>
+  </div>
+  <div class="flex neumorphism">
+    <div class="obj box"></div>
+    <div class="obj circle"></div>
+  </div>
+</body>
+
+</html>

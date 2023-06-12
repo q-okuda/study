@@ -13,7 +13,7 @@
     const beforeGlassPath2 = Snap('#glassPath_2');
     const afterGlassPath = "m152,88.5c0,33.41-26.86,60.5-60,60.5s-60-27.09-60-60.5,26.86-60.5,60-60.5,60,27.09,60,60.5ZM0,88.5c0,36.38,22.81,67.63,55.43,81.23,13.57,4.27,30.95,8.24,50.57,6.27,3-1,54.96-8.79,63-47,4-19-18-6-24-2-6,5-28.28,22.96-35,23-7.41.04-4,26-4,26,45.21-5.6,78-42.49,78-87.5C184,39.62,142.81,0,92,0,61.38,0,34.25,14.39,17.53,36.52,6.5,51.12,0,69.08,0,88.5Z";
     const duration = 2000;
-    const deg = 360 * 2;
+    const deg = 360 * 1;
 
     beforeGlassPath1.animate({ d: afterGlassPath }, duration * 0.7);
     beforeGlassPath2.animate({ d: afterGlassPath }, duration * 0.7);
@@ -86,10 +86,18 @@
       });
 
     // 切り替え
+    const eyesSection = d.getElementById('js-eyesSection');
     const toggleBtn = d.getElementById('js-toggleBtn');
     toggleBtn.addEventListener('click', () => {
       eyesSection.classList.toggle('add-lookBubble');
     });
+    eyesSection.addEventListener('mouseleave', () => {
+      eyesSection.classList.add('add-lookBubble');
+    });
+    eyesSection.addEventListener('mouseenter', () => {
+      eyesSection.classList.remove('add-lookBubble');
+    });
+
 
     // 吹き出しアニメーション
     let bubblePos = { x: 0, y: 0 };
@@ -114,7 +122,6 @@
     changeBubbleVisible(bubbles);
 
     // 目アニメーション
-    const eyesSection = d.getElementById('js-eyesSection');
     const eyesWrap = d.getElementById('js-eyesWrap');
     const leftEye = d.getElementById('js-leftEye');
     const rightEye = d.getElementById('js-rightEye');
@@ -224,7 +231,7 @@
       })
       .to(letter, {
         y: () => { return windowHeight * 0.5; },
-        opacity: 0.5,
+        // opacity: 0.5,
         rotate: 90,
         scale: 0,
         duration: 4,

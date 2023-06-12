@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>gfd_animationTest</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+    }
+
+    main {
+      background-color: #ccc;
+    }
+
+    .animationWrap {
+      width: 352px;
+      height: 352px;
+      margin: 0 auto;
+      background: linear-gradient(225deg, rgba(90, 237, 255, 1) 0%, rgba(100, 174, 229, 1) 39.08%, rgba(100, 174, 229, 1) 100%);
+      border-radius: 100%;
+      position: relative;
+    }
+
+    .layer {
+      width: 100%;
+      height: 100%;
+      border-radius: 100%;
+      overflow: hidden;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .layer1 {
+      z-index: 3;
+    }
+
+    .layer2 {
+      z-index: 2;
+    }
+
+    .layer3 {
+      z-index: 1;
+    }
+
+    .layer1_img,
+    .layer2_img,
+    .layer3_img {
+      width: 360px;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      transform: translateX(100%);
+      transition: transform 0.5s;
+    }
+
+    .add-show .layer1_img,
+    .add-show .layer2_img,
+    .add-show .layer3_img {
+      transform: translateX(0);
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <div class="animationWrap" id="js-animationWrap">
+      <div class="layer layer1" id="js-layer1">
+        <img src="./images/img1.png" alt="" class="layer1_img js-img">
+      </div>
+      <div class="layer layer2">
+        <img src="./images/img2.png" alt="" class="layer2_img js-img">
+      </div>
+      <div class="layer layer3">
+        <img src="./images/img3.png" alt="" class="layer3_img js-img">
+      </div>
+    </div>
+    <button type="button" id="js-toggleShow">toggle show</button>
+  </main>
+</body>
+<script>
+  ((d, w) => {
+    w.addEventListener('load', () => {
+      const btn = d.getElementById('js-toggleShow');
+      const animation = d.getElementById('js-animationWrap');
+      const layer1 = d.getElementById('js-layer1');
+
+      btn.addEventListener('click', () => {
+        animation.classList.toggle('add-show');
+
+        if (animation.classList.contains('add-show')) {
+          setTimeout(() => {
+            layer1.style.overflow = 'visible';
+          }, 250);
+        } else {
+          setTimeout(() => {
+            layer1.style.overflow = 'hidden';
+          }, 150);
+        }
+      });
+    });
+  })(document, window);
+</script>
+
+</html>
