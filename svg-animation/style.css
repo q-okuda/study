@@ -300,3 +300,12 @@ img {
   max-width: 500px;
   transform-origin: center bottom;
 }
+
+.bridgeSection {
+  /* height: 3000px; */
+  background: #14509f;
+}
+
+.bridgeFigure {
+  width: calc(4520% / 750 * 100);
+}

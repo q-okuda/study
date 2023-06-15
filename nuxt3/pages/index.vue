@@ -8,19 +8,19 @@
 
   logPageId(pageId);
 
-  import axios from 'axios';
-  async function asyncData() {
-    const { data } = await axios.get(
-      'https://w39taarok5.microcms.io/api/v1/blogs',
-      {
-        headers: { 'X-MICROCMS-API-KEY': 'W0L712YHSxVFEAMLJFF53kTbt0qJxqXmScOb' }
-      }
-    )
-    return data
-  }
+  // import axios from 'axios';
+  // async function asyncData() {
+  //   const { data } = await axios.get(
+  //     'https://w39taarok5.microcms.io/api/v1/blogs',
+  //     {
+  //       headers: { 'X-MICROCMS-API-KEY': 'W0L712YHSxVFEAMLJFF53kTbt0qJxqXmScOb' }
+  //     }
+  //   )
+  //   return data
+  // }
 
-  const contents = ref(asyncData());
-  console.log(contents.value);
+  // const contents = ref(asyncData());
+  // console.log(contents.value);
 </script>
 <template>
   <div :id="pageId">
@@ -38,13 +38,13 @@
       {{ count }}
     </button>
 
-    <ul>
+    <!-- <ul>
       <li v-for="content in contents" :key="content.id">
         <NuxtLink :to="`/${content.id}`">
           {{ content.title }}
         </NuxtLink>
       </li>
-    </ul>
+    </ul> -->
   </div>
 </template>
 

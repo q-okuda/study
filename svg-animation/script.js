@@ -328,5 +328,28 @@
       .to(svgWrap, {
         xPercent: svgHiddenWidth / svgWrapWidth * -100,
       }, 0.11);
+
+
+      // 橋アニメーション
+      const bridgeSection = d.getElementById('js-bridgeSection');
+      const bridge = d.getElementById('js-bridge');
+      const bridgeSectionEnd = bridgeSection.getBoundingClientRect().bottom + scrollY;
+
+      const moveBridge = gsap.timeline({
+        scrollTrigger: {
+          trigger: bridgeSection,
+          start: 'center center', // 'trigger, browser'
+          end: '+=' + bridgeSectionEnd, //アニメーション開始位置から2000px固定する
+          scrub: true, //スクロール量に合わせてアニメーションが進む（数字も指定できる）
+          pin: true, //トリガー要素を固定する
+          markers: true,
+        }
+      });
+
+      console.log(bridge.offsetWidth - innerWidth);
+
+      moveBridge.to(bridge, {
+        x: -bridge.offsetWidth - innerWidth,
+      });
   });
 })(document, window);

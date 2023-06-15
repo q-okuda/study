@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>popover属性</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+
+    .my-popover {
+      padding: 10px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .my-popover::backdrop {
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+  </style>
+</head>
+
+<body>
+  <h1>popover属性</h1>
+  <button popovertarget="my-popover1"> Open Popover 1</button>
+  <dialog id="my-popover1" popover class="my-popover">
+    <p>I am a popover1 with more information.</p>
+    <p>I am a popover1 with more information.</p>
+    <p>I am a popover1 with more information.</p>
+    <p>I am a popover1 with more information.</p>
+    <p>I am a popover1 with more information.</p>
+    <p>I am a popover1 with more information.</p>
+    <p>I am a popover1 with more information.</p>
+    <p>I am a popover1 with more information.</p>
+    <p>I am a popover1 with more information.</p>
+  </dialog>
+
+  <button popovertarget="my-popover2"> Open Popover 2</button>
+  <dialog id="my-popover2" popover class="my-popover">
+    <p>I am a popover2 with more information.</p>
+  </dialog>
+</body>
+
+</html>
