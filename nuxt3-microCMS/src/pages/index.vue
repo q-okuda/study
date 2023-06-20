@@ -1,5 +1,6 @@
 <script setup>
 const { data: blogs } = await useFetch('/api/blogList');
+console.log(blogs);
 </script>
 <template>
   <h1>TOP</h1>
