@@ -1,6 +1,8 @@
 <script setup>
+const { counter, inc, dec } = useCounter();
 const route = useRoute();
 const slug = String(route.params.slug);
+
 
 const { data: article } = await useFetch(`/api/blogDetail`, {
   params: { slug: slug },
@@ -18,5 +20,10 @@ if (!article.value) {
     </ul>
     <h1>{{ article.title }}</h1>
     <div v-html="article.content" />
+    <div>カウンター: {{ counter }}</div>
+    <button @click="inc">+</button>
+    <button @click="dec">-</button>
+
+    <nuxt-link to="./count/">countページ</nuxt-link>
   </main>
 </template>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>scrollend</title>
+  <style>
+    main {
+      height: 200vh;
+    }
+
+    .txt {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%)
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <h1>scrollend</h1>
+    <span class="txt">スクロール前</span>
+  </main>
+  <script>
+    ((d, w) => {
+      const logScrollEnd = () => {
+        console.log('scrollEnd');
+      };
+
+      // 今まで
+      d.addEventListener('scroll', () => {
+        clearTimeout(w.scrollEndTimer);
+        w.scrollEndTimer = setTimeout(logScrollEnd, 100);
+      });
+
+      // これから
+      // d.addEventListener('scrollend', logScrollEnd);
+
+
+      const txt = d.querySelector('.txt');
+      d.addEventListener('scroll', () => {
+        txt.innerText = 'スクロール中';
+      });
+
+      d.addEventListener('scrollend', () => {
+        txt.innerText = "スクロール終了";
+      });
+
+      // この方法は以下のようなタイミングで発火します。
+
+      // ・ブラウザでスクロールのアニメーションやトランディションが終わった時
+      // ・ユーザーの指が離れた時
+      // ・ポインターがスクロールバーを離した時
+      // ・キー入力を終わった時
+      // ・ページ内スクロールが終わった時
+      // ・スクロールスナップが終わった時
+      // ・scrollTo()が終わった時
+      // ・visual viewportのスクロールした時
+      // （視覚的ビューポート・・・画面の視覚的な部分。これは画面上のキーボード、ピンチ操作で拡大したことにより画面外に出た領域、その他のページの寸法に合わせて拡大縮小されない画面上の部分を除いたものです。）
+
+      // ただ、以下の条件では発火しないので注意が必要です。
+
+      // ・ユーザーのジェスチャーによって、スクロールの位置が変化しない時
+      // ・scrollTo()でトランディションがなかった時
+
+      // caniuse
+      // https://caniuse.com/?search=scrollend
+    })(document, window);
+  </script>
+</body>
+
+</html>

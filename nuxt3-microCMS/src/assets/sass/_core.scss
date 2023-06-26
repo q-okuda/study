@@ -1,0 +1,35 @@
+/*
+ +	core css
+ */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-family: $font_def;
+  font-size: 16px;
+}
+
+h1 {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+a {
+  transition: opacity .2s;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
+img {
+  width: 100%;
+  height: auto;
+}

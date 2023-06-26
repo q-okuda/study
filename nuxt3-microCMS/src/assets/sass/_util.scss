@@ -1,0 +1,17 @@
+.util {
+  &-pc {
+    display: none;
+
+    @include media(sp, min) {
+      display: block;
+    }
+  }
+
+  &-sp {
+    display: block;
+
+    @include media(sp, min) {
+      display: none;
+    }
+  }
+}

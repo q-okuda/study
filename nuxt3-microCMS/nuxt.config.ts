@@ -1,10 +1,19 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  devtools: { enabled: true },
-  // modules: ['nuxt-microcms-module'],
+  // devtools: { enabled: true },
   srcDir: 'src/',
+  // css: ['@/assets/sass/style.scss'],
   runtimeConfig: {
-    serviceDomain:'w39taarok5',
-    apiKey: 'W0L712YHSxVFEAMLJFF53kTbt0qJxqXmScOb',
+    serviceDomain: process.env.SERVICE_DOMAIN,
+    apiKey: process.env.API_KEY,
   },
-})
+  vite: {
+    css: {
+      preprocessorOptions: {
+        scss: {
+          additionalData: '@import "@/assets/sass/style.scss";'
+        },
+      },
+    },
+  },
+});
