@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>float-input-label</title>
+  <style>
+    .inputWrap {
+      position: relative;
+      margin-top: 50px;
+      margin-inline: auto;
+      max-width: 400px;
+    }
+
+    .input {
+      font-size: 20px;
+      width: 100%;
+      padding: 8px 0;
+      padding-right: 30px;
+      color: #333;
+      border: none;
+      border-bottom: 1px solid #ddd;
+      transition: border-color 0.25s;
+      background-color: transparent;
+    }
+
+    .input:focus {
+      outline: none;
+      border-bottom-color: #777;
+    }
+
+    .input::placeholder {
+      color: transparent;
+    }
+
+    .input::-webkit-contacts-auto-fill-button {
+      visibility: hidden;
+      pointer-events: none;
+      position: absolute;
+    }
+
+    .label {
+      position: absolute;
+      top: 8px;
+      left: 0;
+      color: #43454e;
+      pointer-events: none;
+      transform-origin: left center;
+      transition: transform 250ms;
+      font-family: sans-serif;
+    }
+
+    .input:focus+.label,
+    .input:not(:placeholder-shown)+.label {
+      transform: translateY(-100%) scale(0.75);
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <div class="inputWrap">
+      <input type="text" id="name" class="input" placeholder="Name" autocomplete="off">
+      <label for="name" class="label">Name</label>
+    </div>
+    <div class="inputWrap">
+      <input type="email" id="email" class="input" placeholder="Email" autocomplete="off">
+      <label for="email" class="label">Email</label>
+    </div>
+    <div class="inputWrap">
+      <input type="tel" id="tel" class="input" placeholder="Tel" autocomplete="off">
+      <label for="tel" class="label">Tel</label>
+    </div>
+  </main>
+</body>
+
+</html>

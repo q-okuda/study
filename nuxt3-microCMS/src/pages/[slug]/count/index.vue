@@ -1,8 +1,11 @@
 <script setup>
-const { counter, inc, dec } = useCounter();
+import { storeToRefs } from 'pinia';
+const counterStore = useCounterStore();
+const { increment, decrement } = counterStore;
+const { count } = storeToRefs(counterStore);
 </script>
 <template>
-    <div>カウンター: {{ counter }}</div>
-    <button @click="inc">+</button>
-    <button @click="dec">-</button>
+    <div>カウンター: {{ count }}</div>
+    <button @click="increment">+</button>
+    <button @click="decrement">-</button>
 </template>

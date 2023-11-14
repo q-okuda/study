@@ -1,0 +1,32 @@
+<%_ include('_const') _%>
+<%_ include('_functions') _%>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="format-detection" content="telephone=no">
+  <title><% if( data.title !== '' ){ %><%= data.title + ' | ' ; %><%= TITLE %><% }else{ %><%= TITLE %><% } %></title>
+  <meta name="description" content="<% if( data.description !== '' ){ %><%= data.description; %><% }else{ %><%= DESCRIPTION %><% } %>" />
+  <meta name="keywords" content="<% if( data.keyword !== '' ){ %><%= data.keyword + ','; %><%= KEYWORD %><% }else{ %><%= KEYWORD %><% } %>" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:title" content="<% if( data.title !== '' ){ %><%= data.title + ' | ' ; %><%= TITLE %><% }else{ %><%= TITLE %><% } %>">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="<% if( data.url !== '' ){ %><%= SITEURL + data.url; %><% }else{ %><%= SITEURL %><% } %>">
+  <meta property="og:image" content="<%= SITEURL + OG_IMG %>">
+  <meta property="og:description" content="<% if( data.description !== '' ){ %><%= data.description; %><% }else{ %><%= OG_DESCRIPTION %><% } %>">
+  <meta property="og:site_name" content="<% if( data.title !== '' ){ %><%= data.title + ' | ' ; %><%= TITLE %><% }else{ %><%= TITLE %><% } %>">
+  <% if(data.noindex) { %>
+    <meta name="robots" content="noindex,nofollow">
+  <% } %>
+  <link rel="canonical" href="<% if( data.url !== '' ){ %><%= SITEURL + data.url; %><% }else{ %><%= SITEURL %><% } %>">
+  <% if(data.alternateDir) { %>
+    <link rel="alternate" media="only screen and (max-width: 640px)" href="<% if( data.url !== '' ){ %><%= SITEURL + data.url + '/' + data.alternateDir + '/'; %><% }else{ %><%= SITEURL + '/' + data.alternateDir + '/' %><% } %>" />
+  <% } %>
+  <link rel="stylesheet" href="<%= data.current %>assets/css/style.css?<%= DATE %>">
+  <script src="<%= data.current %>assets/js/app.js?<%= DATE %>" defer></script>
+  <%- data.headScript; %>
+</head>
+<body id="<%= data.name %>">
+<%- include( '_header' , { data : data } ); %>

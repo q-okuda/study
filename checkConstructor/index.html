@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>checkConstructor</title>
+</head>
+
+<body>
+  <h1>checkConstructor</h1>
+  <script>
+    ((d, w) => {
+      w.addEventListener('load', () => {
+        // class Human {
+        //   constructor(name) {
+        //     this.name = name;
+        //   }
+        //   sayName() {
+        //     console.log(this.name);
+        //   }
+        // }
+
+        // const taro = new Human("taro");
+        console.log(typeof(Human)); // "function"
+
+        console.log(typeof(CSSStyleSheet));
+        if (typeof CSSStyleSheet === 'function') {
+          console.log('CSSStyleSheetがサポートされています。');
+          const sheet = new CSSStyleSheet();
+          sheet.replaceSync(`
+          * {
+            color: #fff;
+            background: #000;
+          }
+        `);
+
+          d.adoptedStyleSheets = [sheet];
+        } else {
+          console.log('CSSStyleSheetがサポートされていません。');
+        }
+      });
+
+
+    })(document, window);
+  </script>
+</body>
+
+</html>

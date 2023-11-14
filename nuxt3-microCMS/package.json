@@ -10,12 +10,20 @@
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
+    "@pinia-plugin-persistedstate/nuxt": "^1.1.1",
     "@types/node": "^18",
     "nuxt": "^3.5.2",
-    "sass": "^1.63.4",
-    "sass-loader": "^13.3.2"
+    "sass": "^1.63.6",
+    "sass-loader": "^13.3.2",
+    "vite-plugin-vuetify": "^1.0.2",
+    "vuetify": "^3.3.5"
   },
   "dependencies": {
-    "microcms-js-sdk": "^2.5.0"
+    "@pinia/nuxt": "^0.4.11",
+    "microcms-js-sdk": "^2.5.0",
+    "pinia": "^2.1.4"
+  },
+  "overrides": {
+    "vue": "latest"
   }
 }

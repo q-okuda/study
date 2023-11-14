@@ -1,0 +1,9 @@
+.c-btn {
+  width: 100px;
+  padding: 20px 0;
+
+  &--red {
+    @extend .c-btn;
+    background-color: red;
+  }
+}

@@ -1,0 +1,1 @@
+!function(){"use strict";var o,n,c;document,window,o={name:"aiichiro",id:0,admin:!0},console.log({user:o}),n="locked",console.log({lockStates:n}),c=[1,2,3],console.log({numArray:c})}();

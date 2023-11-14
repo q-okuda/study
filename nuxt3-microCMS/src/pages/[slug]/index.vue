@@ -1,5 +1,9 @@
 <script setup>
-const { counter, inc, dec } = useCounter();
+import { storeToRefs } from 'pinia';
+const counterStore = useCounterStore();
+const { increment, decrement } = counterStore;
+const { count } = storeToRefs(counterStore);
+
 const route = useRoute();
 const slug = String(route.params.slug);
 
@@ -11,6 +15,11 @@ const { data: article } = await useFetch(`/api/blogDetail`, {
 if (!article.value) {
   throw createError({ statusCode: 404, statusMessage: 'Page Not Found' });
 }
+
+useHead({
+  title: 'details',
+  meta: [{ name: 'description', content: 'testDescription' }],
+});
 </script>
 <template>
   <main>
@@ -20,9 +29,9 @@ if (!article.value) {
     </ul>
     <h1>{{ article.title }}</h1>
     <div v-html="article.content" />
-    <div>カウンター: {{ counter }}</div>
-    <button @click="inc">+</button>
-    <button @click="dec">-</button>
+    <div>カウンター: {{ count }}</div>
+    <button @click="increment">+</button>
+    <button @click="decrement">-</button>
 
     <nuxt-link to="./count/">countページ</nuxt-link>
   </main>

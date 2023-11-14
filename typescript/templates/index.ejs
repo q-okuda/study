@@ -1,0 +1,26 @@
+<%_
+  var data = {
+    url: '',/* スラッシュ始まりのドメイン以下URL ( TOPの場合は空文字で ) */
+    name: 'top',/* bodyタグにつくid名 */
+    title:'typescript',/* TOPの場合は空文字で */
+    description:'',/* TOPの場合は空文字で */
+    keyword:'',/* TOPの場合は空文字で */
+    current:'./',
+    assetsDir: 'assets/',
+    alternateDir: '',
+    noindex: false,
+  } 
+_%>
+<%_ data.headScript = (function () {/*
+<script type="text/javascript"></script>
+*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];_%>
+<%_ data.content = function(){ _%>
+<div class="content">
+  <h1>typescript</h1>
+</div>
+<%_ } _%> 
+<%_ /* 以下includeファイル */ _%>
+<%- include( data.current + 'includes/_head', { data : data } ); %>
+<%- data.content(); %>
+<%- include( data.current + 'includes/_footer', { data : data } ); %>
+<%- include( data.current + 'includes/_foot', { data : data } ); %>

@@ -11,26 +11,14 @@ html {
 
 body {
   font-family: $font_def;
-  font-size: 16px;
 }
 
-a, button {
+a {
   transition: opacity .2s;
   text-decoration: none;
   cursor: pointer;
 
   &:hover {
     opacity: 0.7;
-  }
-}
-
-img {
-  width: 100%;
-  height: auto;
-}
-
-@media print {
-  html {
-    zoom: 0.8;
   }
 }

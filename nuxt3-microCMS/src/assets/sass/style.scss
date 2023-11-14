@@ -1,35 +1,35 @@
-@charset "UTF-8";
+// @charset "UTF-8";
 
 // reset
-@import "reset";
+// @import "reset";
 
 // variables
-@import "variables/common";
-@import "variables/fontfamily";
-@import "variables/skin";
+// @import "variables/common";
+// @import "variables/fontfamily";
+// @import "variables/skin";
 
 // mixins
-@import "mixins/common";
-@import "mixins/responsive";
+// @import "mixins/common";
+// @import "mixins/responsive";
 
 // core
-@import "core";
+// @import "core";
 
 // parts
 // @import "parts/*";
 
 // pages
-@import "pages/common";
+// @import "pages/common";
 
 // utility
-@import "util";
+// @import "util";
 
 // libs
 // @import "libs/swiper";
 
 // print対策用
-@media print {
-  html {
-    zoom: 0.8;
-  }
-}
+// @media print {
+//   html {
+//     zoom: 0.8;
+//   }
+// }
