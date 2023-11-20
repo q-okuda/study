@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+    img {
+      width: 100%;
+      height: auto;
+    }
+    .slider-container {
+      width: calc(256px * 4);
+      height: 256px;
+      overflow: hidden;
+      margin: 0 auto;
+    }
+
+    .slider-content {
+      display: flex;
+      animation: slide 20s linear infinite;
+      width: calc(256px * 8);
+      height: 256px;
+    }
+
+    .slider-item {
+      flex-shrink: 0;
+      width: 256px;
+      height: 256px;
+    }
+
+    @keyframes slide {
+      0% {
+        transform: translateX(0%) rotate(-0.001deg);
+      }
+      100% {
+        transform: translateX(-50%) rotate(-0.001deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="slider-container">
+    <div class="slider-content">
+      <div class="slider-item"><img src="./prof.png" alt=""></div>
+      <div class="slider-item"><img src="./psycho.jpg" alt=""></div>
+      <div class="slider-item"><img src="./prof.png" alt=""></div>
+      <div class="slider-item"><img src="./psycho.jpg" alt=""></div>
+      <div class="slider-item"><img src="./prof.png" alt=""></div>
+      <div class="slider-item"><img src="./psycho.jpg" alt=""></div>
+      <div class="slider-item"><img src="./prof.png" alt=""></div>
+      <div class="slider-item"><img src="./psycho.jpg" alt=""></div>
+    </div>
+  </div>
+
+</body>
+
+</html>
