@@ -37,7 +37,7 @@
     }
     .slider-content {
       display: flex;
-      animation: slide 20s linear infinite;
+      animation: slide 15s linear infinite;
       width: calc(256px * 8);
       height: 256px;
       position: relative;
@@ -47,6 +47,14 @@
       flex-shrink: 0;
       width: 256px;
       height: 256px;
+      position: relative;
+    }
+    .num {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: blue;
     }
     .slider-bg {
       position: absolute;
@@ -146,14 +154,38 @@
 
   <div class="slider-container">
     <div class="slider-content">
-      <div class="slider-item"><img src="./prof.png" alt=""></div>
-      <div class="slider-item"><img src="./psycho.jpg" alt=""></div>
-      <div class="slider-item"><img src="./prof.png" alt=""></div>
-      <div class="slider-item"><img src="./psycho.jpg" alt=""></div>
-      <div class="slider-item"><img src="./prof.png" alt=""></div>
-      <div class="slider-item"><img src="./psycho.jpg" alt=""></div>
-      <div class="slider-item"><img src="./prof.png" alt=""></div>
-      <div class="slider-item"><img src="./psycho.jpg" alt=""></div>
+      <div class="slider-item">
+        <span class="num">1</span>
+        <img src="./prof.png" alt="">
+      </div>
+      <div class="slider-item">
+        <span class="num">2</span>
+        <img src="./psycho.jpg" alt="">
+      </div>
+      <div class="slider-item">
+        <span class="num">3</span>
+        <img src="./prof.png" alt="">
+      </div>
+      <div class="slider-item">
+        <span class="num">4</span>
+        <img src="./psycho.jpg" alt="">
+      </div>
+      <div class="slider-item">
+        <span class="num">5</span>
+        <img src="./prof.png" alt="">
+      </div>
+      <div class="slider-item">
+        <span class="num">6</span>
+        <img src="./psycho.jpg" alt="">
+      </div>
+      <div class="slider-item">
+        <span class="num">7</span>
+        <img src="./prof.png" alt="">
+      </div>
+      <div class="slider-item">
+        <span class="num">8</span>
+        <img src="./psycho.jpg" alt="">
+      </div>
     </div>
     <div class="slider-bg">
       <div class="slider-bg-item"><img src="./prof.png" alt=""></div>
