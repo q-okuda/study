@@ -14,7 +14,9 @@
       height: auto;
     }
 
-    body {
+    main {
+      position: relative;
+      width: 100%;
       overflow: hidden;
     }
 
@@ -29,7 +31,6 @@
 
     .slider-container {
       width: calc(256px * 4);
-      height: 256px;
       overflow: hidden;
       margin: 0 auto;
       position: relative;
@@ -95,10 +96,22 @@
       width: 600px;
       height: 600px;
     }
+
+    .deviceTest {
+      display: none;
+    }
+
+    @media screen and (max-width: 768px) and (hover: none) and (pointer: coarse){
+      .deviceTest {
+        display: block;
+      }
+    }
   </style>
 </head>
 
 <body>
+<main class="main">
+  <div class="deviceTest">これはスマホ端末です。</div>
 
   <div class="slider-container">
     <div class="slider-content">
@@ -136,7 +149,8 @@
       <div class="slider-bg-item2"><img src="./prof.png" alt=""></div>
       <div class="slider-bg-item2"><img src="./psycho.jpg" alt=""></div>
     </div>
-  <div>
+  </div>
+</main>
 </body>
 
 </html>
