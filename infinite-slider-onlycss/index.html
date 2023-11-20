@@ -13,27 +13,9 @@
       width: 100%;
       height: auto;
     }
-    .slider-container {
-      width: calc(600px * 4);
-      height: 600px;
+
+    body {
       overflow: hidden;
-      margin: 0 auto;
-      position: relative;
-    }
-
-    .slider-content {
-      display: flex;
-      animation: slide 5s linear infinite;
-      width: calc(600px * 8);
-      height: 600px;
-      position: relative;
-      z-index: 2;
-    }
-
-    .slider-item {
-      flex-shrink: 0;
-      width: 600px;
-      height: 600px;
     }
 
     @keyframes slide {
@@ -45,6 +27,26 @@
       }
     }
 
+    .slider-container {
+      width: calc(256px * 4);
+      height: 256px;
+      overflow: hidden;
+      margin: 0 auto;
+      position: relative;
+    }
+    .slider-content {
+      display: flex;
+      animation: slide 20s linear infinite;
+      width: calc(256px * 8);
+      height: 256px;
+      position: relative;
+      z-index: 2;
+    }
+    .slider-item {
+      flex-shrink: 0;
+      width: 256px;
+      height: 256px;
+    }
     .slider-bg {
       position: absolute;
       top: 0;
@@ -54,8 +56,42 @@
       display: flex;
       z-index: 1;
     }
-
     .slider-bg-item {
+      width: 256px;
+      height: 256px;
+    }
+
+
+    .slider-container2 {
+      width: calc(600px * 4);
+      height: 600px;
+      overflow: hidden;
+      margin: 20px auto 0;
+      position: relative;
+    }
+    .slider-content2 {
+      display: flex;
+      animation: slide 5s linear infinite;
+      width: calc(600px * 8);
+      height: 600px;
+      position: relative;
+      z-index: 2;
+    }
+    .slider-item2 {
+      flex-shrink: 0;
+      width: 600px;
+      height: 600px;
+    }
+    .slider-bg2 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      z-index: 1;
+    }
+    .slider-bg-item2 {
       width: 600px;
       height: 600px;
     }
@@ -83,6 +119,24 @@
     </div>
   </div>
 
+  <div class="slider-container2">
+    <div class="slider-content2">
+      <div class="slider-item2"><img src="./prof.png" alt=""></div>
+      <div class="slider-item2"><img src="./psycho.jpg" alt=""></div>
+      <div class="slider-item2"><img src="./prof.png" alt=""></div>
+      <div class="slider-item2"><img src="./psycho.jpg" alt=""></div>
+      <div class="slider-item2"><img src="./prof.png" alt=""></div>
+      <div class="slider-item2"><img src="./psycho.jpg" alt=""></div>
+      <div class="slider-item2"><img src="./prof.png" alt=""></div>
+      <div class="slider-item2"><img src="./psycho.jpg" alt=""></div>
+    </div>
+    <div class="slider-bg2">
+      <div class="slider-bg-item2"><img src="./prof.png" alt=""></div>
+      <div class="slider-bg-item2"><img src="./psycho.jpg" alt=""></div>
+      <div class="slider-bg-item2"><img src="./prof.png" alt=""></div>
+      <div class="slider-bg-item2"><img src="./psycho.jpg" alt=""></div>
+    </div>
+  <div>
 </body>
 
 </html>
