@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* ラジオボタンを非表示にする */
+    /* input[type="radio"] {
+      display: none;
+    } */
+
+    /* アコーディオンメニューのスタイル */
+    .accordion {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .accordion-item {
+      margin-bottom: 10px;
+      overflow: hidden;
+      /* max-height: 0;
+      transition: max-height 0.3s; */
+      background-color: yellowgreen;
+      
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.3s;
+    }
+
+    .accordion-item div {
+      overflow: hidden;
+    }
+
+    input[type="checkbox"] {
+      display: none;
+    }
+
+    input[type="checkbox"]:checked + .accordion-item {
+      /* max-height: 1000px; */
+      grid-template-rows: 1fr;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="accordion">
+    <label for="section1">Section 1</label>
+    <input type="checkbox" name="accordion" id="section1">
+    <div class="accordion-item">
+      <div>
+        <!-- ここにコンテンツを追加 -->
+        Content for Section 1
+        Content for Section 1        Content for Section 1        Content for Section 1        Content for Section 1        Content for Section 1        Content for Section 1        Content for Section 1        Content for Section 1        Content for Section 1        Content for Section 1        Content for Section 1        Content for Section 1        Content for Section 1
+      </div>
+    </div>
+    <label for="section2">Section 2</label>
+    <input type="checkbox" name="accordion" id="section2">
+    <div class="accordion-item">
+      <div>
+        <!-- ここにコンテンツを追加 -->
+        Content for Section 2        Content for Section 2        Content for Section 2        Content for Section 2        Content for Section 2        Content for Section 2        Content for Section 2        Content for Section 2        Content for Section 2        Content for Section 2        Content for Section 2        Content for Section 2        Content for Section 2        Content for Section 2        Content for Section 2
+      </div>
+    </div>
+
+    <!-- 追加のセクションを必要に応じて繰り返します -->
+  </div>
+
+  <div style="margin-top: 100px">
+    <details name="details">
+      <summary>summary1</summary>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus, exercitationem. Unde eum ad voluptate eaque. Culpa repudiandae, placeat porro ipsa magnam laudantium natus similique debitis delectus, vitae adipisci molestiae nulla.</p>
+    </details>
+    <details name="details">
+      <summary>summary2</summary>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus, exercitationem. Unde eum ad voluptate eaque. Culpa repudiandae, placeat porro ipsa magnam laudantium natus similique debitis delectus, vitae adipisci molestiae nulla.</p>
+    </details>
+  </div>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Youtube API</title>
+  </head>
+  <body>
+    test
+    <div id="video-container"></div>
+    <div id="video-container2"></div>
+
+    <iframe
+      width="560"
+      height="315"
+      src="https://www.youtube.com/embed/h9ib_F7YNuA?si=Bq392tMO48v-zKhw"
+      title="YouTube video player"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen
+    ></iframe>
+    <script>
+      const videoId = "IDO6Y1aWozg";
+      const videoId_2 = "h9ib_F7YNuA";
+
+      // YouTube APIを使用して動画の状態を取得
+      function checkVideoStatus(videoId, elId) {
+        const apiUrl = "https://www.googleapis.com/youtube/v3/videos";
+        const apiKey = "AIzaSyAZG_k20sS-oNzv667S2L-ZDma9vAW3cGI";
+
+        const requestUrl =
+          apiUrl + "?id=" + videoId + "&key=" + apiKey + "&part=status";
+
+        fetch(requestUrl)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            const el = document.getElementById(elId);
+            if (data.items.length > 0) {
+              el.innerHTML = '<iframe width="560" height="315" src="https://www.youtube.com/embed/' + videoId + '" frameborder="0" allowfullscreen></iframe>';
+            } else {
+              // レスポンスがない場合やエラーが発生した場合の処理
+              console.error("YouTube APIで動画の状態を取得できませんでした。");
+              el.innerHTML = '<img src="./img1.jpg" alt="代替え画像">';
+            }
+          })
+          .catch((error) => {
+            console.error("YouTube APIリクエストエラー:", error);
+          });
+      }
+
+      // 動画の状態を確認してコンテンツを表示
+      checkVideoStatus(videoId, "video-container");
+
+      checkVideoStatus(videoId_2, "video-container2");
+    </script>
+  </body>
+</html>

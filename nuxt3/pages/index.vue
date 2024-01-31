@@ -7,6 +7,7 @@
   };
 
   logPageId(pageId);
+  const { ua, engine, os, device, cpu } = useUserAgent();
 
   // import axios from 'axios';
   // async function asyncData() {
@@ -37,7 +38,11 @@
     >
       {{ count }}
     </button>
-
+    <div>{{ ua }}</div>
+    <div>{{ engine }}</div>
+    <div>{{ os }}</div>
+    <div>{{ device }}</div>
+    <div>{{ cpu }}</div>
     <!-- <ul>
       <li v-for="content in contents" :key="content.id">
         <NuxtLink :to="`/${content.id}`">

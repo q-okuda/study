@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>img-decoding-loading-attribute</title>
+  <style>
+    img {
+      width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <!-- https://soune.co.jp/html-living-standard/ -->
+
+  <!-- decoding属性  画像のデコード方式を指定します。 -->
+  <!-- async: 画像のデコードを非同期に行うように指示します。これはページのレンダリングをブロックするのを防ぎ、ページの読み込み速度を向上させることができます。 -->
+  <!-- sync: 画像のデコードを同期的に行うように指示します。画像がすぐに表示されることを保証しますが、大きな画像をデコードするとページのレンダリングがブロックされる可能性があります。 -->
+  <!-- auto: ブラウザにデコード方法を自動的に決定するように指示します。ページの他の要素や画像のサイズや種類などの要素に基づいて最適なデコード戦略を選択します。 -->
+  <img src="./images/img1.jpg" alt="" decoding="async">
+  
+  <!-- loading属性  画像の読み込みのタイミングを指定します。 -->
+  <!-- eager: 画像が現在可視ビューポートに入っているかどうかにかかわらず、直ちに画像を読み込みます (これが既定値です)。 -->
+  <!-- lazy: 画像がブラウザーで定義されたビューポートからの距離に達するまで、画像の読み込みを遅延させます。これは、画像が必要とされるのが合理的に確実になるまで、処理に必要なネットワークやストレージの帯域幅を使用しないようにするためです。これは一般的に、ほとんどの典型的な使用法において、コンテンツの性能を向上させることができます。 メモ: 読み込みが延期されるのは JavaScript が有効になっているときだけです。 -->
+    <!-- https://developer.mozilla.org/ja/docs/Web/HTML/Element/img -->
+  <img src="./images/img2.jpg" alt="" loading="lazy" style="margin-top: 5000px;" decoding="async">
+  <img src="./images/img3.jpg" alt="" loading="lazy" style="margin-top: 5000px;" decoding="async">
+</body>
+</html>
