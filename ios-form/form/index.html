@@ -2,10 +2,13 @@
 
 <head>
 <title>test page</title>
-<link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" async="">
 </head>
 <body>
 <style>
+.modal {
+  display: none;
+}
+
 .modal-dialog {
   display: flex;
   flex-direction: column;
@@ -52,7 +55,7 @@ $(function() {
 		}
 		$(window).on('hashchange',function(event){
 			if(location.hash != '#message') {
-				$('#modal1').modal('show');
+				$('#modal1').show();
 			}
 		});
 });
