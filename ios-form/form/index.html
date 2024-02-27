@@ -47,9 +47,23 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script src="./jquery.history.js"></script>
 <script>
-window.onbeforeunload = function() {
-  alert('入力途中ですが、このページを離れてもよろしいですか？');
-};
+$(function() {
+		var hash = location.hash;
+		if(hash != '#message') {
+			history.pushState(null,null,location.href);
+			history.replaceState(null,null,'#message');
+		}
+		$(window).on('popstate',function(event){
+			if(location.hash != '#message') {
+				$('#modal1').show();
+			}
+		});
+});
+
+$('#back_button').click(function() {
+	history.back();
+	return false;
+});
 </script>
 </body>
 </html>
