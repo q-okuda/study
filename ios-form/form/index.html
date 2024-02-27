@@ -47,33 +47,13 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script src="./jquery.history.js"></script>
 <script>
-$(function() {
-	var ua = navigator.userAgent;
-	if((ua.indexOf('iPhone') !== -1) && (ua.indexOf("Chrome") !== -1 || ua.indexOf("CriOS") !== -1)) {
-		// iPhoneのChromeは対応する処理がない
-	} else {
-		var hash = location.hash;
-		if(hash != '#message') {
-			// pushStateで現在のURLを履歴にスタックする
-			history.pushState(null,null,location.href);
-			// URLにtagを設置する
-			location.hash = '#message';
-		}
-		
-		// URLが変更されるのを監視
-		$(window).on('popstate',function(event){
-			if(location.hash != '#message') {
-				// モーダルを実行
-				$('#modal1').show();
-			}
-		});
-	}
+window.addEventListener("beforeunload", (event) => {
+  // Cancel the event as stated by the standard.
+  event.preventDefault();
+  // Chrome requires returnValue to be set.
+  event.returnValue = "test";
 });
 
-$('#back_button').click(function() {
-	history.back();
-	return false;
-});
 </script>
 </body>
 </html>
