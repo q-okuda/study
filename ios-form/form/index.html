@@ -42,34 +42,24 @@
   </div>
 </div>
 <script src="/js/jquery-3.3.1.min.js"></script>
+<script src="http://www.yourwebsite.com/history.js/scripts/bundled/html4+html5/jquery.history.js"></script>
 <script src="/bootstrap/js/bootstrap.min.js"></script>
 <script>
 $(function() {
-	var ua = navigator.userAgent;
-	if((ua.indexOf('iPhone') !== -1) && (ua.indexOf("Chrome") !== -1 || ua.indexOf("CriOS") !== -1)) {
-		// iPhoneのChromeは対応する処理がない
-	} else {
 		var hash = location.hash;
 		if(hash != '#message') {
-			// pushStateで現在のURLを履歴にスタックする
 			history.pushState(null,null,location.href);
-			// URLにtagを設置する
-			location.hash = '#message';
+			history.replaceState(null,null,'#message');
 		}
-		
-		// URLが変更されるのを監視
-		$(window).on('popstate',function(event){
+		$(window).on('hashchange',function(event){
 			if(location.hash != '#message') {
-				// モーダルを実行
 				$('#modal1').modal('show');
 			}
 		});
-	}
 });
 
-// 戻るボタン用
 $('#back_button').click(function() {
-	history.back();
+	history.back(-1);
 	return false;
 });
 </script>
