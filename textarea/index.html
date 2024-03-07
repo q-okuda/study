@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>天地中央テキストエリア</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    .textareaWrap {
+      width: 500px;
+      height: 200px;
+      border: 1px solid #000;
+      cursor: text;
+      display: grid;
+      place-content: center;
+      position: relative;
+    }
+
+    .textareaWrap textarea {
+      font-size: 30px;
+      width: 100%;
+      height: 1.5em;
+      padding: 0;
+      text-align: center;
+      border: none;
+      resize: none;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="textareaWrap" id="js-textareaWrap">
+    <textarea id="js-textarea"></textarea>
+  </div>
+  <script>
+    ((d, w) => { 
+      const textareaWrap = d.getElementById('js-textareaWrap');
+      const textarea = d.getElementById('js-textarea');
+
+      textareaWrap.addEventListener('click', ()=>{
+        textarea.focus();
+      });
+
+      //textareaのデフォルトの要素の高さを取得 
+      let clientHeight = textarea.clientHeight;
+
+      textarea.addEventListener('input', ()=>{
+        //textareaの要素の高さを設定
+        textarea.style.height = clientHeight + 'px';
+        //textareaの入力内容の高さを取得
+        let scrollHeight = textarea.scrollHeight;
+        //textareaの高さに入力内容の高さを設定
+        textarea.style.height = scrollHeight + 'px';
+      })
+    })(document, window);
+  </script>
+</body>
+</html>
