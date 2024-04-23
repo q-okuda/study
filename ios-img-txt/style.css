@@ -15,6 +15,12 @@ img {
   background: url(./images/31_pop.png) no-repeat center center / 100%;
 }
 
+@media (width <= 768px) {
+  .imgWrap {
+    width: 100%;
+  }
+}
+
 .imgWrap_dl {
   position: absolute;
   width: 120px;
@@ -23,11 +29,17 @@ img {
   left: 50%;
   transform: translate(-50%, -27%);
   overflow: hidden;
+  /* pointer-events: none; */
 }
+
+
 
 .imgWrap_dl_img {
   position: absolute;
-  inset: 0;
-  margin: auto;
+  width: 1000vw;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
   opacity: 0.01;
+  /* pointer-events: all; */
 }
