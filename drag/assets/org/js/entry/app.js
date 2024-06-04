@@ -1,8 +1,8 @@
 import { common } from "../pages/common";
 
 ((d, w) => {
-  // switch (d.body.id) {
+	// switch (d.body.id) {
 
-  // }
-  common();
+	// }
+	common();
 })(document, window);

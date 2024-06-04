@@ -1,75 +1,59 @@
 import extend from "./extend";
 
-export default class visibleCover{
+export default class visibleCover {
+	constructor(dom, config) {
+		this.config = {
+			aspect: 0.5625,
+			positionType: "fixed",
+			topPosition: "0",
+			centering: false,
+		};
 
-  constructor( dom , config ){
+		if (config) extend(this.config, config);
 
-    const _T = this;
+		this.dom = dom;
+		this.aspect = this.config.aspect;
+		this.dom.style.position = this.config.positionType;
 
-    _T.config = { 
-      aspect : 0.5625,
-      positionType : "fixed",
-      topPosition : "0",
-      centering : false
-    };
+		if (this.config.centering) {
+			this.dom.style.top = "50%";
+			this.dom.style.left = "50%";
+			this.dom.style.transform = "translateX( -50% ) translateY( -50% )";
+		} else {
+			this.dom.style.top = this.config.topPosition + "px";
+			this.dom.style.top = "0px";
+		}
 
-    if( config ) extend( _T.config , config );
-    
-    _T.dom = dom;
-    _T.aspect = _T.config.aspect;
-    _T.dom.style.position = _T.config.positionType;
+		this._initialize();
+	}
 
-    if( _T.config.centering ){
-      _T.dom.style.top = '50%';
-      _T.dom.style.left = '50%';
-      _T.dom.style.transform = 'translateX( -50% ) translateY( -50% )';      
-    }
-    else{
-      _T.dom.style.top = _T.config.topPosition + 'px';
-      _T.dom.style.top = '0px';
-    }
-    
-    _T._initialize();
-  }
+	_getJudgmentDirection() {
+		if (innerWidth * this.aspect > innerHeight) {
+			return "widthChange";
+		} else {
+			return "heightChange";
+		}
+	}
 
-  _getJudgmentDirection(){
+	_setSize(changeType) {
+		switch (changeType) {
+			case "heightChange":
+				this.dom.style.width = innerWidth + "px";
+				this.dom.style.height = innerWidth * this.aspect + "px";
+				break;
 
-    const _T = this;
-    
-    if( innerWidth * _T.aspect > innerHeight ){
-      return "widthChange";
-    }
-    else{
-      return "heightChange";
-    }
-  }
+			case "widthChange":
+				this.dom.style.width = innerHeight / this.aspect + "px";
+				this.dom.style.height = innerHeight + "px";
+				break;
+		}
+	}
 
-  _setSize( changeType ){
+	_initialize() {
+		this._setSize(this._getJudgmentDirection());
 
-    const _T = this;
-    
-    switch( changeType ){
-      case "heightChange":
-        _T.dom.style.width = innerWidth + "px";
-        _T.dom.style.height = innerWidth * _T.aspect + "px";
-      break;
-
-      case "widthChange":
-        _T.dom.style.width = innerHeight / _T.aspect + "px";
-        _T.dom.style.height = innerHeight + "px";
-      break;
-    }
-  }
-
-  _initialize(){
-
-    const _T = this;
-    
-    _T._setSize( _T._getJudgmentDirection() );
-
-    window.addEventListener( 'resize' , function(){
-      _T._setSize( _T._getJudgmentDirection() );
-    });
-  }
-
+		window.addEventListener("resize", () => {
+			this._setSize(this._getJudgmentDirection());
+		});
+	}
 }

@@ -1,298 +1,232 @@
-export default class Dom{
-	
-	constructor( dom ){
-
-		if( !dom ) return false;
-		this.dom = ( typeof dom === 'string' )? document.querySelectorAll( dom ) : dom;
+export default class Dom {
+	constructor(dom) {
+		if (!dom) return false;
+		this.dom = typeof dom === "string" ? document.querySelectorAll(dom) : dom;
 	}
 
-	html( htmlDocument ){
-
-		let _t = this;
+	html(htmlDocument) {
 		let innerHtml;
 
-		_t._each( _t.dom , function( thisNode ){
-			if( htmlDocument ){
+		this._each(this.dom, (thisNode) => {
+			if (htmlDocument) {
 				thisNode.innerHTML = htmlDocument;
-			}
-			else{
+			} else {
 				innerHtml = thisNode.innerHTML;
 			}
 		});
 
-		return innerHtml ? innerHtml : _t;
+		return innerHtml ? innerHtml : this;
 	}
 
-	outerHtml( htmlDocument ){
-
-		let _t = this;
+	outerHtml(htmlDocument) {
 		let outerHtml;
 
-		_t._each( _t.dom , function( thisNode ){
-			if( htmlDocument ){
+		this._each(this.dom, (thisNode) => {
+			if (htmlDocument) {
 				thisNode.outerHTML = htmlDocument;
-			}
-			else{
+			} else {
 				outerHtml = thisNode.outerHTML;
 			}
 		});
 
-		return outerHtml ? outerHtml : _t;
-
+		return outerHtml ? outerHtml : this;
 	}
 
-	text( text ){
-
-		let _t = this;
+	text(text) {
 		let textContent;
 
-		_t._each( _t.dom , function( thisNode ){
-			if( text ){
+		this._each(this.dom, (thisNode) => {
+			if (text) {
 				thisNode.textContent = text;
-			}
-			else{
+			} else {
 				textContent = thisNode.textContent;
 			}
 		});
 
-		return textContent ? textContent : _t;
-
+		return textContent ? textContent : this;
 	}
 
-	css( keys , property ){
-
-		let _t = this;
+	css(keys, property) {
 		let styleProperty;
-		
-		_t._each( _t.dom , function( thisNode ){
-			if( typeof keys === "object" ){
 
-				Object.keys( keys ).forEach( function( key ){
-					thisNode[ "style" ][ key ] = this[ key ];
-				} , keys );
-			}
-			else{
-				if( !property ){
-					let style = thisNode.currentStyle || window.getComputedStyle( thisNode );
-					style = style[ keys ];
-					if( style === 'auto' ){
-						switch( keys ){
-							case 'width':
-								style = String( thisNode.offsetWidth );
-							break;
-							case 'height':
-								style = String( thisNode.offsetHeight );							
-							break;
+		this._each(this.dom, (thisNode) => {
+			if (typeof keys === "object") {
+				Object.keys(keys).forEach(function (key) {
+					thisNode["style"][key] = this[key];
+				}, keys);
+			} else {
+				if (!property) {
+					let style =
+						thisNode.currentStyle || window.getComputedStyle(thisNode);
+					style = style[keys];
+					if (style === "auto") {
+						switch (keys) {
+							case "width":
+								style = String(thisNode.offsetWidth);
+								break;
+							case "height":
+								style = String(thisNode.offsetHeight);
+								break;
 						}
 					}
-					styleProperty = thisNode[ "style" ][ keys ] || style;
-				}
-				else{
-					thisNode[ "style" ][ keys ] = property;
+					styleProperty = thisNode["style"][keys] || style;
+				} else {
+					thisNode["style"][keys] = property;
 				}
 			}
 		});
 
-
-		return styleProperty ? styleProperty : _t;
+		return styleProperty ? styleProperty : this;
 	}
 
-	attr( attributename , value ){
-
-		let _t = this;
+	attr(attributename, value) {
 		let valueProperty;
 
-		_t._each( _t.dom , function( thisNode ){
-			if( value ){
-				thisNode.setAttribute( attributename , value );
-			}
-			else{
-				valueProperty = thisNode.getAttribute( attributename );
+		this._each(this.dom, (thisNode) => {
+			if (value) {
+				thisNode.setAttribute(attributename, value);
+			} else {
+				valueProperty = thisNode.getAttribute(attributename);
 			}
 		});
 
-		return valueProperty ? valueProperty : _t;
+		return valueProperty ? valueProperty : this;
 	}
 
-	val( value ){
-
-		let _t = this;
+	val(value) {
 		let valueProperty;
 
-		_t._each( _t.dom , function( thisNode ){
-			if( value ){
-				thisNode.setAttribute( "value" , value );
-			}
-			else{
-				valueProperty = thisNode.getAttribute( "value" );
+		this._each(this.dom, (thisNode) => {
+			if (value) {
+				thisNode.setAttribute("value", value);
+			} else {
+				valueProperty = thisNode.getAttribute("value");
 			}
 		});
 
-		return valueProperty ? valueProperty : _t;
-
+		return valueProperty ? valueProperty : this;
 	}
 
-	addEvent( eventtype , callback , boolean ){
-
-		let _t = this;
-
-		_t._each( _t.dom , function( thisNode ){
-
-			thisNode.addEventListener(
-				eventtype ,
-				callback ,
-				boolean || false
-			);
+	addEvent(eventtype, callback, boolean) {
+		this._each(this.dom, (thisNode) => {
+			thisNode.addEventListener(eventtype, callback, boolean || false);
 		});
 
-		return _t;
+		return this;
 	}
 
-	hasClass( classname ){
-
-		let _t = this;
+	hasClass(classname) {
 		let flag;
 
-		_t._each( _t.dom , function( thisNode ){
-
-			let classArray = thisNode.className.split(' ');
-			flag = classArray.indexOf( classname ) >= 0;
+		this._each(this.dom, (thisNode) => {
+			const classArray = thisNode.className.split(" ");
+			flag = classArray.indexOf(classname) >= 0;
 		});
 
 		return flag;
 	}
 
-	addClass( classname ){
+	addClass(classname) {
+		this._each(this.dom, (thisNode) => {
+			const classArray = thisNode.className.split(" ");
+			const index = classArray.indexOf(classname);
 
-		let _t = this;
-
-		_t._each( _t.dom , function( thisNode ){
-
-			let classArray = thisNode.className.split(' ');
-			let index = classArray.indexOf( classname );
-
-			if( index === -1 ){
-				classArray.push( classname );
-				thisNode.className = _t._trim( classArray.join(' ') );
+			if (index === -1) {
+				classArray.push(classname);
+				thisNode.className = this._trim(classArray.join(" "));
 			}
 		});
 
-		return _t;
+		return this;
 	}
 
-	removeClass( classname ){
-
-		let _t = this;
-
-		_t._each( _t.dom , function( thisNode ){
-			let classArray = thisNode.className.split(' ');
-			let index = classArray.indexOf( classname );
-			if( index >= 0 ){
-				classArray.splice( index , 1 );
-				thisNode.className = _t._trim( classArray.join(' ') );
+	removeClass(classname) {
+		this._each(this.dom, (thisNode) => {
+			const classArray = thisNode.className.split(" ");
+			const index = classArray.indexOf(classname);
+			if (index >= 0) {
+				classArray.splice(index, 1);
+				thisNode.className = this._trim(classArray.join(" "));
 			}
 		});
 
-		return _t;
+		return this;
 	}
 
-	toggleClass( classname ){
+	toggleClass(classname) {
+		this._each(this.dom, (thisNode) => {
+			const classArray = thisNode.className.split(" ");
+			const index = classArray.indexOf(classname);
 
-		let _t = this;
-
-		_t._each( _t.dom , function( thisNode ){
-
-			let classArray = thisNode.className.split(' ');
-			let index = classArray.indexOf( classname );
-
-			if( index >= 0 ){
-				classArray.splice( index , 1 );
-			}
-			else{
-				classArray.push( classname );
+			if (index >= 0) {
+				classArray.splice(index, 1);
+			} else {
+				classArray.push(classname);
 			}
 
-			thisNode.className = _t._trim( classArray.join(' ') );
-
+			thisNode.className = this._trim(classArray.join(" "));
 		});
 
-		return _t;
+		return this;
 	}
 
-	append( appendNode ){
-
-		let _t = this;
-
-		_t._each( _t.dom , function( thisNode ){
-			thisNode.appendChild( appendNode );
+	append(appendNode) {
+		this._each(this.dom, (thisNode) => {
+			thisNode.appendChild(appendNode);
 		});
-		return _t;
+		return this;
 	}
 
-	preppend( preppendNode ){
-
-		let _t = this;
-
-		_t._each( _t.dom , function( thisNode ){
-			thisNode.insertBefore( preppendNode , thisNode.firstChild );
+	preppend(preppendNode) {
+		this._each(this.dom, (thisNode) => {
+			thisNode.insertBefore(preppendNode, thisNode.firstChild);
 		});
-		return _t;
+		return this;
 	}
 
-	children(){    
-
-		let _t = this;
+	children() {
 		let childNodes;
 
-		_t._each( _t.dom , function( thisNode ){
-			childNodes = ( thisNode.children.length )? thisNode.children : false;
+		this._each(this.dom, (thisNode) => {
+			childNodes = thisNode.children.length ? thisNode.children : false;
 		});
 		return childNodes;
 	}
 
-	parent(){    
-		let _t = this;
+	parent() {
 		let parentNode;
 
-		_t._each( _t.dom , function( thisNode ){
+		this._each(this.dom, (thisNode) => {
 			parentNode = thisNode.parentNode;
 		});
 		return parentNode;
 	}
 
-	eq( index ){    
+	eq(index) {
+		this.dom = this.dom.length ? this.dom[index] : this.dom;
 
-		let _t = this;
-		_t.dom = ( _t.dom.length )? _t.dom[ index ] : _t.dom;
-
-		return _t;
+		return this;
 	}
 
-	size(){
+	size() {
+		const length = this.dom.length || 0;
 
-		let _t = this;
-		let length = _t.dom.length || 0;
-	
 		return length;
 	}
 
-	clones(){
+	clones() {
+		const cloneArray = [];
 
-		let _t = this;
-		let cloneArray = [];
-
-		_t._each( _t.dom , function( thisNode ){
-			cloneArray.push( thisNode.cloneNode( true ) );
+		this._each(this.dom, (thisNode) => {
+			cloneArray.push(thisNode.cloneNode(true));
 		});
 		return cloneArray;
 	}
 
-	offset(){
+	offset() {
+		const positionObject = {};
 
-		let _t = this;
-		let positionObject = {};
-
-		_t._each( _t.dom , function( thisNode ){
+		this._each(this.dom, (thisNode) => {
 			positionObject.left = thisNode.getBoundingClientRect().left + pageXOffset;
 			positionObject.top = thisNode.getBoundingClientRect().top + pageYOffset;
 		});
@@ -300,38 +234,29 @@ export default class Dom{
 		return positionObject;
 	}
 
-	each( callback ){
-
-		let _t = this;
-
-		if( _t.dom.length ){
-
-			for( let index = 0 ; index < _t.dom.length ; index++ ){
-				callback( _t.dom[ index ] , index );
+	each(callback) {
+		if (this.dom.length) {
+			for (let index = 0; index < this.dom.length; index++) {
+				callback(this.dom[index], index);
 			}
-		}
-		else{
-			callback( _t.dom , 0 );
+		} else {
+			callback(this.dom, 0);
 		}
 
-		return _t;
+		return this;
 	}
 
-	_each( dom , callback ){
-		let _t = this;
-
-		if( dom.length ){
-			for( let index = 0 ; index < dom.length ; index++ ){
-				callback( dom[  index ] );
+	_each(dom, callback) {
+		if (dom.length) {
+			for (let index = 0; index < dom.length; index++) {
+				callback(dom[index]);
 			}
-		}
-		else{
-			callback( dom );
+		} else {
+			callback(dom);
 		}
 	}
 
-	_trim( string ){
-		return string.replace( /^\s+|\s+$/g , '' );
+	_trim(string) {
+		return string.replace(/^\s+|\s+$/g, "");
 	}
-
 }

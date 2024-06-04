@@ -1,428 +1,443 @@
 import extend from "./extend";
 
-export default class ZoomImage{
+export default class ZoomImage {
+	constructor(config) {
+		this.config = {
+			boxClass: "js-zoomBox",
+			imageClass: "js-zoomImage",
+			clickStart: true,
+			responsiveSettings: [
+				{
+					width: 999999, //  less than
+					zoomType: "window", // inner or window or false
+				},
+				{
+					width: 960,
+					zoomType: "inner",
+				},
+				{
+					width: 767,
+					zoomType: "inner",
+				},
+			],
+			initializeCallback: (element) => {},
+		};
+		if (config) extend(this.config, config);
 
-  constructor( config ){
+		if (document.getElementsByClassName(this.config.boxClass))
+			this._initialize();
+	}
 
-    const _T = this;
+	_initialize() {
+		this.boxes = document.getElementsByClassName(this.config.boxClass);
+		this.zoomWindow = document.getElementsByClassName("js-zoomWindow")[0];
+		this.zoomingClass = "add-zooming";
+		this.loadingClass = "add-zoomloading";
+		this.loadedClass = "add-zoomloaded";
+		this.zoomableClass = "add-zoomable";
+		this.hideLayerClass = "zoomHideLayer";
+		this.zoomLensClass = "zoomLens";
+		this.zoomFlg = false;
+		this.zoomImgClass = "zoomImage";
+		this.zoomImgSizes = [];
+		this.zoomType = this._getZoomType();
+		this._pointerOutEvent = this._pointerOutEvent.bind(this);
+		this._zoomElements = this._zoomElements.bind(this);
+		this._pointerInEvent = this._pointerInEvent.bind(this);
+		this._setZoomElements();
+		this._setEventListener();
+	}
+	_setEventListener() {
+		this._each((box, index) => {
+			const ThisElement = box;
+			this._setPointerInEvent(ThisElement, index);
+			this._setPointerOutEvent(ThisElement, index);
+			this._setPointerMoveEvent(ThisElement, index);
+		});
+	}
+	_setPointerMoveEvent(thisElement, index) {
+		const ThisConfig = this.zoomImgSizes[index];
 
-    _T.config = {
-      boxClass: 'js-zoomBox',
-      imageClass:'js-zoomImage',
-      clickStart : true,
-      responsiveSettings : [
-        {
-          width : 999999, //  less than
-          zoomType : 'window', // inner or window or false
-        },
-        {
-          width : 960, 
-          zoomType : 'inner',
-        },
-        {
-          width : 767, 
-          zoomType : 'inner',
-        },
-      ],
-      initializeCallback: element => {
-      }
-    }
-    if( config ) extend( _T.config , config );
+		thisElement.addEventListener("mousemove", (e) => {
+			this._pointerMoveEvent(ThisConfig, thisElement, e);
+		});
+		thisElement.addEventListener("touchmove", (e) => {
+			this._pointerMoveEvent(ThisConfig, thisElement, e);
+		});
+	}
+	_pointerMoveEvent(thisConfig, thisElement, e) {
+		if (
+			thisConfig.isZoomable &&
+			this.zoomFlg &&
+			thisElement.className.split(" ").indexOf(this.zoomingClass) > -1
+		) {
+			e.stopPropagation();
+			e.preventDefault();
+			switch (this.zoomType) {
+				case "inner":
+					this._setInnerZoomImagePosition(thisElement, e, thisConfig);
+					break;
+				case "window":
+					this._setWindowZoomImagePosition(thisElement, e, thisConfig);
+					break;
+			}
+		}
+	}
+	_setPointerInEvent(thisElement, index) {
+		const ThisConfig = this.zoomImgSizes[index];
 
-    if( document.getElementsByClassName( _T.config.boxClass ) ) _T._initialize();
-  }
+		if (this.config.clickStart) {
+			thisElement.addEventListener("click", (e) => {
+				const Target = e.currentTarget;
 
-  _initialize(){
-    const _T = this;
+				if (!ThisConfig.isZoomable || !this.zoomType) return false;
+				if (
+					thisElement.className.split(" ").indexOf(this.zoomingClass) === -1
+				) {
+					switch (this.zoomType) {
+						case "inner":
+							this._setInnerZoomImage(Target, index);
+							this._setInnerZoomImagePosition(thisElement, e, ThisConfig);
+							break;
+						case "window":
+							this._setWindowZoomImage(Target, index);
+							this._setWindowZoomImagePosition(thisElement, e, ThisConfig);
+							break;
+					}
 
-    _T.boxes = document.getElementsByClassName( _T.config.boxClass );
-    _T.zoomWindow = document.getElementsByClassName('js-zoomWindow')[0];
-    _T.zoomingClass = 'add-zooming';
-    _T.loadingClass = 'add-zoomloading';
-    _T.loadedClass = 'add-zoomloaded';
-    _T.zoomableClass = 'add-zoomable';
-    _T.hideLayerClass = 'zoomHideLayer';
-    _T.zoomLensClass = 'zoomLens';
-    _T.zoomFlg = false;
-    _T.zoomImgClass = 'zoomImage';
-    _T.zoomImgSizes = [];
-    _T.zoomType = _T._getZoomType();
-    _T._pointerOutEvent = _T._pointerOutEvent.bind(_T);
-    _T._zoomElements = _T._zoomElements.bind(_T);
-    _T._pointerInEvent = _T._pointerInEvent.bind(_T);
-    _T._setZoomElements();
-    _T._setEventListener();
-  }
-  _setEventListener(){
+					thisElement.className += " " + this.zoomingClass;
+					this.zoomFlg = true;
+				} else {
+					switch (this.zoomType) {
+						case "inner":
+							this._removeInnerZoomImage(Target);
+							break;
+						case "window":
+							this._removeWindowZoomImage(Target);
+							break;
+					}
 
-    const _T = this;
+					thisElement.className = thisElement.className.replace(
+						" " + this.zoomingClass,
+						"",
+					);
+					this.zoomFlg = false;
+				}
+			});
+		} else {
+			thisElement.addEventListener(
+				"mouseenter",
+				this._pointerInEvent(thisElement, index, thisConfig),
+			);
+			thisElement.addEventListener(
+				"touchstart",
+				this._pointerInEvent(thisElement, index, thisConfig),
+			);
+		}
+	}
+	_pointerInEvent(thisElement, index, thisConfig) {
+		return () => {
+			if (!thisConfig.isZoomable || !this.zoomType) return false;
+			switch (this.zoomType) {
+				case "inner":
+					this._setInnerZoomImage(thisElement, index);
+					break;
+				case "window":
+					this._setWindowZoomImage(thisElement, index);
+					break;
+			}
+			thisElement.className += " " + this.zoomingClass;
+			this.zoomFlg = true;
+		};
+	}
+	_setPointerOutEvent(thisElement) {
+		thisElement.addEventListener(
+			"mouseleave",
+			this._pointerOutEvent(thisElement),
+		);
+		thisElement.addEventListener(
+			"touchend",
+			this._pointerOutEvent(thisElement),
+		);
+	}
+	_pointerOutEvent(thisElement) {
+		return () => {
+			if (thisElement.className.split(" ").indexOf(this.zoomingClass) > -1) {
+				switch (this.zoomType) {
+					case "inner":
+						this._removeInnerZoomImage(thisElement);
+						break;
+					case "window":
+						this._removeWindowZoomImage(thisElement);
+						break;
+				}
 
-    _T._each( ( box , index ) => {
-      const ThisElement = box;
-      _T._setPointerInEvent( ThisElement , index );
-      _T._setPointerOutEvent( ThisElement , index );
-      _T._setPointerMoveEvent( ThisElement , index );
-    });
-  }
-  _setPointerMoveEvent( thisElement , index ){
+				thisElement.className = thisElement.className.replace(
+					" " + this.zoomingClass,
+					"",
+				);
+				this.zoomFlg = false;
+			}
+		};
+	}
+	_setZoomElements() {
+		this._each((box, index) => {
+			const ThisImage = box.getElementsByClassName(this.config.imageClass)[0];
+			const Config = (this.zoomImgSizes[index] = {
+				imageSrc: ThisImage.getAttribute("src"),
+				zoomSrc: ThisImage.getAttribute("data-zoomSrc"),
+				width: null,
+				height: null,
+				zoomWidth: null,
+				zoomHeight: null,
+				isZoomable: false,
+				isLoaded: false,
+				magnification: null,
+				aspectRatio: null,
+			});
 
-    const _T = this;
-    const ThisConfig = _T.zoomImgSizes[ index ];
+			const NormalImage = new Image();
+			NormalImage.src = Config.imageSrc;
+			NormalImage.addEventListener("load", () => {
+				this._setImageSize(ThisImage, Config);
+				this._setIsZoomable(Config, box);
+			});
 
-    thisElement.addEventListener( 'mousemove' , e => {
-      _T._pointerMoveEvent( ThisConfig , thisElement , e );
-    });
-    thisElement.addEventListener( 'touchmove' , e => {
-      _T._pointerMoveEvent( ThisConfig , thisElement , e );
-    });
-  }
-  _pointerMoveEvent( thisConfig , thisElement , e ){
-    
-    const _T = this;
+			ThisImage.addEventListener(
+				"mouseenter",
+				this._zoomElements(Config, box, false),
+			);
+			ThisImage.addEventListener(
+				"touchstart",
+				this._zoomElements(Config, box, false),
+			);
 
-    if( thisConfig.isZoomable && _T.zoomFlg && ( thisElement.className.split(' ').indexOf( _T.zoomingClass ) > -1 ) ){
-      e.stopPropagation();
-      e.preventDefault();
-      switch( _T.zoomType ){
-        case 'inner':
-          _T._setInnerZoomImagePosition( thisElement , e , thisConfig );
-        break;
-        case 'window':
-          _T._setWindowZoomImagePosition( thisElement , e , thisConfig );
-        break;
-      }
-    }
-  }
-  _setPointerInEvent( thisElement , index ){
+			let resizeTimer = false;
+			window.addEventListener("resize", () => {
+				if (resizeTimer !== false) {
+					clearTimeout(resizeTimer);
+				}
+				resizeTimer = setTimeout(() => {
+					this._setImageSize(ThisImage, Config);
+					this._setMagnification(Config);
+					this.zoomType = this._getZoomType();
+					resizeTimer = false;
+				}, 200);
+			});
+		});
+	}
+	_zoomElements(thisConfig, box, zoomLoadFlg) {
+		return () => {
+			if (!this.zoomType) return false;
+			if (!zoomLoadFlg) {
+				const ZoomImage = new Image();
+				ZoomImage.className = this.zoomImgClass;
+				ZoomImage.src = thisConfig.zoomSrc;
 
-    const _T = this;
-    const ThisConfig = _T.zoomImgSizes[ index ];
-    
-    if( _T.config.clickStart ){
-      thisElement.addEventListener( 'click' , e => {
+				box.className += " " + this.loadingClass;
 
-        const Target = e.currentTarget;
+				ZoomImage.addEventListener("load", () => {
+					this._setZoomImageSize(ZoomImage, thisConfig);
+					this._setIsZoomable(thisConfig, box);
+					box.className = box.className.replace(" " + this.loadingClass, "");
+					box.className += " " + this.loadedClass;
 
-        if( !ThisConfig.isZoomable || !_T.zoomType ) return false;
-        if( thisElement.className.split(' ').indexOf( _T.zoomingClass ) === -1 ){
-          switch( _T.zoomType ){
-            case 'inner':
-              _T._setInnerZoomImage( Target , index );
-              _T._setInnerZoomImagePosition( thisElement , e , ThisConfig );
-            break;
-            case 'window':
-              _T._setWindowZoomImage( Target , index );
-              _T._setWindowZoomImagePosition( thisElement , e , ThisConfig );
-            break;
-          }
-          
-          thisElement.className += ( ' ' + _T.zoomingClass );
-          _T.zoomFlg = true;
-        }else{
-          switch( _T.zoomType ){
-            case 'inner':
-              _T._removeInnerZoomImage( Target );
-            break;
-            case 'window':
-              _T._removeWindowZoomImage( Target );
-            break;
-          }
+					thisConfig.aspectRatio = ZoomImage.height / ZoomImage.width;
+				});
+				zoomLoadFlg = true;
+			}
+		};
+	}
 
-          thisElement.className = thisElement.className.replace( ' ' + _T.zoomingClass , '' );
-          _T.zoomFlg = false;
-        }
-      });
-    }
-    else{
-      thisElement.addEventListener( 'mouseenter' , _T._pointerInEvent( thisElement , index , thisConfig ) );
-      thisElement.addEventListener( 'touchstart' , _T._pointerInEvent( thisElement , index , thisConfig ) );
-    }
+	_setInnerZoomImage(thisElement, index) {
+		const ZoomImage = document.createElement("img");
+		ZoomImage.className = this.zoomImgClass;
+		ZoomImage.src = this.zoomImgSizes[index].zoomSrc;
 
-  }
-  _pointerInEvent( thisElement , index , thisConfig ){
-    const _T = this;
-    return ()=>{
-      if( !thisConfig.isZoomable || !_T.zoomType ) return false;
-      switch( _T.zoomType ){
-        case 'inner':
-          _T._setInnerZoomImage( thisElement , index );
-        break;
-        case 'window':
-          _T._setWindowZoomImage( thisElement , index );
-        break;
-      }
-      thisElement.className += ( ' ' + _T.zoomingClass );
-      _T.zoomFlg = true;
-    }
-  }
-  _setPointerOutEvent( thisElement ){
+		const styles = ZoomImage.style;
+		styles.position = "absolute";
+		styles.opacity = 1;
 
-    const _T = this;
+		thisElement.appendChild(ZoomImage);
 
-    thisElement.addEventListener( 'mouseleave' , _T._pointerOutEvent( thisElement ));
-    thisElement.addEventListener( 'touchend' ,  _T._pointerOutEvent( thisElement ) );
-  }
-  _pointerOutEvent( thisElement ){
-    const _T = this;
-    return () => {
-      if( thisElement.className.split(' ').indexOf( _T.zoomingClass ) > -1 ){
-        
-        switch( _T.zoomType ){
-          case 'inner':
-            _T._removeInnerZoomImage( thisElement );
-          break;
-          case 'window':
-            _T._removeWindowZoomImage( thisElement );
-          break;
-        }
+		ZoomImage.style.opacity = 1;
+	}
 
-        thisElement.className = thisElement.className.replace( ' ' + _T.zoomingClass , '' );
-        _T.zoomFlg = false;
-      }
-    }
-  }
-  _setZoomElements(){
+	_setWindowZoomImage(thisElement, index) {
+		//zoomwindow
+		this.zoomWindow.style.display = "block";
+		this.zoomWindow.style.height =
+			this.zoomWindow.offsetWidth * this.zoomImgSizes[index].aspectRatio + "px";
+		this.zoomWindow.style.backgroundImage =
+			"url(" + this.zoomImgSizes[index].zoomSrc + ")";
 
-    const _T = this;
+		//lens
+		const ZoomLens = document.createElement("div");
+		ZoomLens.className = this.zoomLensClass;
 
-    _T._each( ( box , index ) => {
-      const ThisImage = box.getElementsByClassName( _T.config.imageClass )[ 0 ];
-      const Config = _T.zoomImgSizes[ index ] = {
-        imageSrc : ThisImage.getAttribute( 'src' ),
-        zoomSrc : ThisImage.getAttribute( 'data-zoomSrc' ),
-        width: null,
-        height: null,
-        zoomWidth: null,
-        zoomHeight: null,
-        isZoomable : false,
-        isLoaded : false,
-        magnification : null,
-        aspectRatio : null
-      }
-      
-      const NormalImage = new Image();
-      NormalImage.src = Config.imageSrc;
-      NormalImage.addEventListener( 'load' , function(){
-        _T._setImageSize( ThisImage , Config );
-        _T._setIsZoomable( Config , box );
-      });
+		const Styles = ZoomLens.style;
+		Styles.position = "absolute";
+		const LensWidth =
+			thisElement.getElementsByClassName(this.config.imageClass)[0]
+				.offsetWidth *
+			(this.zoomWindow.offsetWidth / this.zoomImgSizes[index].zoomWidth);
+		Styles.width = LensWidth + "px";
+		Styles.height = LensWidth * this.zoomImgSizes[index].aspectRatio + "px";
+		Styles.backgroundImage = "url(" + this.zoomImgSizes[index].imageSrc + ")";
+		Styles.backgroundSize = this.zoomImgSizes[index].width + "px";
+		Styles.top = 0;
+		Styles.left = 0;
+		Styles.zIndex = 2;
 
-      ThisImage.addEventListener('mouseenter', _T._zoomElements( Config , box , false ) );
-      ThisImage.addEventListener('touchstart', _T._zoomElements( Config , box , false ) );
+		thisElement.appendChild(ZoomLens);
 
-      let resizeTimer = false;
-      window.addEventListener('resize', () => {
-        if ( resizeTimer !== false ) {
-            clearTimeout(resizeTimer);
-        }
-        resizeTimer = setTimeout( () => {
-          _T._setImageSize( ThisImage , Config );
-          _T._setMagnification( Config );
-          _T.zoomType = _T._getZoomType();
-          resizeTimer = false;
-        }, 200 );
-      });
+		//masklayer
+		const HideLayer = document.createElement("div");
+		HideLayer.className = this.hideLayerClass;
 
-    });
-  }
-  _zoomElements( thisConfig , box , zoomLoadFlg ){
+		const Styles2 = HideLayer.style;
+		Styles2.position = "absolute";
+		Styles2.backgroundColor = "rgba(0,0,0,0.5)";
+		Styles2.top = "0";
+		Styles2.right = "0";
+		Styles2.bottom = "0";
+		Styles2.left = "0";
 
-    const _T = this;
-    
-    return () => {
-      if( !_T.zoomType ) return false;        
-      if( !zoomLoadFlg ){
-        const ZoomImage = new Image();
-        ZoomImage.className = _T.zoomImgClass;
-        ZoomImage.src = thisConfig.zoomSrc;
+		thisElement.appendChild(HideLayer);
+	}
 
-        box.className += ' ' + _T.loadingClass;
-        
-        ZoomImage.addEventListener( 'load' , () => {
-          _T._setZoomImageSize( ZoomImage , thisConfig );
-          _T._setIsZoomable( thisConfig , box );
-          box.className = box.className.replace( ' ' + _T.loadingClass , '' );
-          box.className += ' ' + _T.loadedClass;
-          
-          thisConfig.aspectRatio = ZoomImage.height / ZoomImage.width;
-        });
-        zoomLoadFlg = true;
-      }
-    }
-  }
+	_removeInnerZoomImage(thisElement) {
+		thisElement.removeChild(
+			thisElement.getElementsByClassName(this.zoomImgClass)[0],
+		);
+	}
 
-  _setInnerZoomImage( thisElement , index ){
-    const _T = this;
+	_removeWindowZoomImage(thisElement) {
+		this.zoomWindow.style.display = "none";
+		thisElement.removeChild(
+			thisElement.getElementsByClassName(this.hideLayerClass)[0],
+		);
+		thisElement.removeChild(
+			thisElement.getElementsByClassName(this.zoomLensClass)[0],
+		);
+	}
 
-    const ZoomImage = document.createElement('img');
-    ZoomImage.className = _T.zoomImgClass;
-    ZoomImage.src = _T.zoomImgSizes[ index ].zoomSrc;
-    
-    let styles = ZoomImage.style;
-    styles.position = 'absolute';
-    styles.opacity = 1;        
+	_setInnerZoomImagePosition(thisElement, event, thisConfig) {
+		const Rect = thisElement.getBoundingClientRect();
+		const Left =
+			((typeof event.touches === "undefined"
+				? event.clientX
+				: event.touches[0].clientX) -
+				Rect.left) *
+			(thisConfig.magnification - 1) *
+			-1;
+		const Top =
+			((typeof event.touches === "undefined"
+				? event.clientY
+				: event.touches[0].clientY) -
+				Rect.top) *
+			(thisConfig.magnification - 1) *
+			-1;
 
-    thisElement.appendChild( ZoomImage ); 
+		thisElement.getElementsByClassName(this.zoomImgClass)[0].style.left =
+			Left + "px";
+		thisElement.getElementsByClassName(this.zoomImgClass)[0].style.top =
+			Top + "px";
+	}
 
-    ZoomImage.style.opacity = 1;
-  }
+	_setWindowZoomImagePosition(thisElement, event, thisConfig) {
+		const Lens = thisElement.getElementsByClassName(this.zoomLensClass)[0];
 
-  _setWindowZoomImage( thisElement , index ){
-    const _T = this;
+		const Rect = thisElement.getBoundingClientRect();
+		const Left =
+			(typeof event.touches === "undefined"
+				? event.clientX
+				: event.touches[0].clientX) -
+			Rect.left -
+			Lens.offsetWidth / 2;
+		const Top =
+			(typeof event.touches === "undefined"
+				? event.clientY
+				: event.touches[0].clientY) -
+			Rect.top -
+			Lens.offsetHeight / 2;
+		//lens
+		if (Left < 0) {
+			Left = 0;
+		} else if (Left > thisElement.offsetWidth - Lens.offsetWidth) {
+			Left = thisElement.offsetWidth - Lens.offsetWidth;
+		}
+		if (Top < 0) {
+			Top = 0;
+		} else if (Top > thisElement.offsetHeight - Lens.offsetHeight) {
+			Top = thisElement.offsetHeight - Lens.offsetHeight;
+		}
+		Lens.style.left = Left + "px";
+		Lens.style.top = Top + "px";
+		Lens.style.backgroundPosition = Left * -1 + "px" + " " + Top * -1 + "px";
 
-    //zoomwindow
-    _T.zoomWindow.style.display = 'block';
-    _T.zoomWindow.style.height = _T.zoomWindow.offsetWidth * _T.zoomImgSizes[index].aspectRatio + 'px';
-    _T.zoomWindow.style.backgroundImage = 'url(' + _T.zoomImgSizes[index].zoomSrc + ')';
-    
-    //lens
-    const ZoomLens = document.createElement('div');
-    ZoomLens.className = _T.zoomLensClass;
+		//window
+		this.zoomWindow.style.backgroundPosition =
+			Left * thisConfig.magnification * -1 +
+			"px" +
+			" " +
+			Top * thisConfig.magnification * -1 +
+			"px";
+	}
 
-    const Styles = ZoomLens.style;
-    Styles.position = 'absolute';
-    const LensWidth = thisElement.getElementsByClassName( _T.config.imageClass )[0].offsetWidth * ( _T.zoomWindow.offsetWidth / _T.zoomImgSizes[index].zoomWidth );
-    Styles.width = LensWidth + 'px';
-    Styles.height = LensWidth * _T.zoomImgSizes[index].aspectRatio + 'px';
-    Styles.backgroundImage = 'url(' + _T.zoomImgSizes[index].imageSrc + ')';
-    Styles.backgroundSize = _T.zoomImgSizes[index].width + 'px';
-    Styles.top = 0;
-    Styles.left = 0;
-    Styles.zIndex = 2;    
+	_setIsZoomable(thisConfig, element) {
+		if (thisConfig.isLoaded) {
+			thisConfig.isZoomable = true;
+			this._setMagnification(thisConfig);
 
-    thisElement.appendChild( ZoomLens ); 
-    
-    //masklayer
-    const HideLayer = document.createElement('div');
-    HideLayer.className = _T.hideLayerClass;
-    
-    const Styles2 = HideLayer.style;
-    Styles2.position = 'absolute';
-    Styles2.backgroundColor = 'rgba(0,0,0,0.5)';
-    Styles2.top = '0';        
-    Styles2.right = '0';        
-    Styles2.bottom = '0';        
-    Styles2.left = '0';        
-    
-    thisElement.appendChild( HideLayer ); 
-  }
+			element.className += " " + this.zoomableClass;
+			this.config.initializeCallback(element);
+		} else {
+			thisConfig.isLoaded = true;
+			return false;
+		}
+	}
+	_setMagnification(thisConfig) {
+		thisConfig.magnification = thisConfig.zoomWidth / thisConfig.width;
+	}
+	_setImageSize(thisImage, thisConfig) {
+		thisConfig.width = thisImage.width;
+		thisConfig.height = thisImage.height;
+	}
+	_setZoomImageSize(thisImage, thisConfig) {
+		thisConfig.zoomWidth = thisImage.width;
+		thisConfig.zoomHeight = thisImage.height;
+	}
+	_each(callback) {
+		for (let index = 0; index < this.boxes.length; index++) {
+			callback(this.boxes[index], index);
+		}
+	}
+	_getZoomType() {
+		const Width = document.documentElement.clientWidth;
+		let type = null;
 
-  _removeInnerZoomImage( thisElement ){
-    const _T = this;
-    thisElement.removeChild(thisElement.getElementsByClassName( _T.zoomImgClass )[0]);
-  }
+		for (
+			let index = 0;
+			index < this.config.responsiveSettings.length;
+			index++
+		) {
+			if (this.config.responsiveSettings[index].width >= Width) {
+				type = this.config.responsiveSettings[index].zoomType;
+			}
+		}
+		return type === null ? "inner" : type;
+	}
 
-  _removeWindowZoomImage( thisElement ){
-    const _T = this;
+	destroy() {
+		this.zoomImgSizes = [];
+		this._each((box, index) => {
+			box.className = box.className.replace(" " + this.zoomableClass, "");
+			box.className = box.className.replace(" " + this.zoomingClass, "");
+			box.className = box.className.replace(" " + this.loadedClass, "");
+			box.className = box.className.replace(" " + this.loadingClass, "");
 
-    _T.zoomWindow.style.display = 'none';
-    thisElement.removeChild(thisElement.getElementsByClassName( _T.hideLayerClass )[0]);
-    thisElement.removeChild(thisElement.getElementsByClassName( _T.zoomLensClass )[0]);
-  }
-
-  _setInnerZoomImagePosition( thisElement , event , thisConfig ){
-
-    const _T = this;
-
-    const Rect = thisElement.getBoundingClientRect();
-    const Left = ( ( ( typeof event.touches === 'undefined' )? event.clientX : event.touches[0].clientX ) - Rect.left ) * ( thisConfig.magnification - 1 ) * -1;
-    const Top = ( ( ( typeof event.touches === 'undefined' )? event.clientY : event.touches[0].clientY ) - Rect.top ) * ( thisConfig.magnification - 1 ) * -1;
-
-    thisElement.getElementsByClassName( _T.zoomImgClass )[0].style.left = Left + 'px';
-    thisElement.getElementsByClassName( _T.zoomImgClass )[0].style.top = Top + 'px';
-  }
-
-  _setWindowZoomImagePosition( thisElement , event , thisConfig ){
-
-    const _T = this;
-
-    const Lens = thisElement.getElementsByClassName( _T.zoomLensClass )[0];
-
-    const Rect = thisElement.getBoundingClientRect();
-    const Left = ( ( ( typeof event.touches === 'undefined' )? event.clientX : event.touches[0].clientX ) - Rect.left ) - ( Lens.offsetWidth / 2 );
-    const Top = ( ( ( typeof event.touches === 'undefined' )? event.clientY : event.touches[0].clientY ) - Rect.top ) - ( Lens.offsetHeight / 2 );
-    //lens
-    if( Left < 0 ){
-      Left = 0;
-    }
-    else if( Left > ( thisElement.offsetWidth - Lens.offsetWidth ) ){
-      Left = thisElement.offsetWidth - Lens.offsetWidth;
-    }
-    if( Top < 0 ){
-      Top = 0;
-    }
-    else if( Top > ( thisElement.offsetHeight - Lens.offsetHeight ) ){
-      Top = thisElement.offsetHeight - Lens.offsetHeight;
-    }
-    Lens.style.left = Left + 'px';
-    Lens.style.top = Top + 'px';
-    Lens.style.backgroundPosition = Left * -1 + 'px' + ' ' + Top * -1 + 'px';
-
-    //window
-    _T.zoomWindow.style.backgroundPosition = ( Left * thisConfig.magnification * -1 ) + 'px' + ' ' + ( Top * thisConfig.magnification * -1 ) + 'px';
-  }
-
-  _setIsZoomable( thisConfig , element ){
-
-    const _T = this;
-    if( thisConfig.isLoaded ){
-      thisConfig.isZoomable = true;
-      _T._setMagnification( thisConfig );
-
-      element.className += ( ' ' + _T.zoomableClass );
-      _T.config.initializeCallback( element );
-    }
-    else{
-      thisConfig.isLoaded = true;
-      return false;
-    }
-  }
-  _setMagnification( thisConfig ){
-    thisConfig.magnification = thisConfig.zoomWidth / thisConfig.width;
-  }
-  _setImageSize( thisImage , thisConfig ){
-    thisConfig.width = thisImage.width;
-    thisConfig.height = thisImage.height;
-  }
-  _setZoomImageSize( thisImage , thisConfig ){
-    thisConfig.zoomWidth = thisImage.width;
-    thisConfig.zoomHeight = thisImage.height;
-  }
-  _each( callback ){
-
-    const _T = this;
-
-    for( let index = 0 ; index < _T.boxes.length ; index++ ){
-      callback( _T.boxes[ index ] , index );
-    }
-  }
-  _getZoomType(){
-
-    const _T = this;
-    const Width = document.documentElement.clientWidth;
-    let type = null;
-
-    for( let index = 0 ; index < _T.config.responsiveSettings.length ; index++ ){
-      if( _T.config.responsiveSettings[index].width >= Width ){
-        type = _T.config.responsiveSettings[index].zoomType;
-      }
-    }
-    return ( type === null )? 'inner' : type;
-  }
-
-  destroy(){
-    const _T = this;
-
-    _T.zoomImgSizes = [];
-    _T._each( ( box , index ) => {
-      
-      box.className = box.className.replace( ' ' + _T.zoomableClass , '' );
-      box.className = box.className.replace( ' ' + _T.zoomingClass , '' );
-      box.className = box.className.replace( ' ' + _T.loadedClass , '' );
-      box.className = box.className.replace( ' ' + _T.loadingClass , '' );
-
-      box.outerHTML = box.outerHTML;
-      
-    });
-  }
+			box.outerHTML = box.outerHTML;
+		});
+	}
 }

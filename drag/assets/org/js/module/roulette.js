@@ -1,78 +1,78 @@
-import extend from "./extend";
 import anime from "npms/animejs";
+import extend from "./extend";
 
-class Roulette{
+class Roulette {
+	constructor(config) {
+		this.config = {
+			rouletteNode: document.querySelector("#roulette"),
+			buttonNode: null,
+			duration: 1000,
+			rotationalAverage: 10,
+			squares: 6,
+			easing: "easeInOutBack",
+			progressingDirection: true,
+			after: (currentSquares) => {
+				console.log(currentSquares);
+			},
+		};
 
-    constructor( config ){
-        const _T = this;
+		if (config) extend(this.config, config);
+		this._initialize();
+	}
 
-        _T.config = {
-            rouletteNode: document.querySelector( '#roulette' ),
-            buttonNode: null,
-            duration: 1000,
-            rotationalAverage: 10,
-            squares: 6,
-            easing: 'easeInOutBack',
-            progressingDirection: true,
-            after:  currentSquares => {
-                console.log( currentSquares );
-            }
-        }
+	_initialize() {
+		this.progressingDirection = this.config.progressingDirection ? "+=" : "+=-";
+		this.currentSquares = 1;
+		this.oneSquares = 360 / this.config.squares;
+		this.rotationalAverage = 360 * this.config.rotationalAverage;
+		this.inAnimationClassName = "in-animation";
+		this.config.buttonNode = this.config.buttonNode || this.config.rouletteNode;
 
-        if( config ) extend( _T.config , config );
-        _T._initialize();
-    }
+		this.config.buttonNode.addEventListener("click", () => {
+			if (this.config.rouletteNode.className.match(this.inAnimationClassName))
+				return false;
+			this._rotationalExecute();
+		});
+	}
 
-    _initialize(){
-        const _T = this;
+	_getRotationalResult(rotationalFrequency) {
+		const Result =
+			(rotationalFrequency - this.rotationalAverage) / this.oneSquares;
 
-        _T.progressingDirection = _T.config.progressingDirection ? '+=':'+=-';
-        _T.currentSquares = 1;
-        _T.oneSquares = 360 / _T.config.squares;
-        _T.rotationalAverage = 360 * _T.config.rotationalAverage;
-        _T.inAnimationClassName = 'in-animation';
-        _T.config.buttonNode = _T.config.buttonNode || _T.config.rouletteNode;
+		if (this.config.progressingDirection) {
+			this.currentSquares =
+				this.currentSquares -
+				Result +
+				(this.currentSquares - Result <= 0 ? this.config.squares : 0);
+		} else {
+			this.currentSquares =
+				this.currentSquares +
+				Result -
+				(this.currentSquares + Result > this.config.squares
+					? this.config.squares
+					: 0);
+		}
 
-        _T.config.buttonNode.addEventListener('click',function(){ 
-            
-            if( _T.config.rouletteNode.className.match( _T.inAnimationClassName ) ) return false;
-            _T._rotationalExecute();
-        });
-    }
+		return this.currentSquares;
+	}
 
-    _getRotationalResult( rotationalFrequency ){
-        const _T = this;
-        const Result = ( rotationalFrequency - _T.rotationalAverage ) / _T.oneSquares;
+	_rotationalExecute() {
+		this.config.rouletteNode.classList.add(this.inAnimationClassName);
+		const RotationalFrequency =
+			this.rotationalAverage +
+			this.oneSquares * Math.floor(Math.random() * this.config.squares + 1);
 
-        if( _T.config.progressingDirection ){
-            _T.currentSquares =  _T.currentSquares - Result + ( ( _T.currentSquares - Result <= 0 )? _T.config.squares: 0 );
-        }
-        else{
-            _T.currentSquares =  _T.currentSquares + Result - ( ( _T.currentSquares + Result > _T.config.squares )? _T.config.squares : 0 );
-        }
-
-        return _T.currentSquares;
-    }
-
-    _rotationalExecute(){
-        const _T = this;
-        
-        _T.config.rouletteNode.classList.add( _T.inAnimationClassName );
-        const RotationalFrequency = _T.rotationalAverage + ( _T.oneSquares * Math.floor( Math.random() * _T.config.squares + 1 ) );
-
-        anime({
-            targets: _T.config.rouletteNode,
-            rotate: {
-                duration: _T.config.duration,
-                value: _T.progressingDirection + RotationalFrequency,
-                easing: _T.config.easing
-            },
-            complete: () => {
-
-                _T.config.rouletteNode.classList.remove( _T.inAnimationClassName );                
-                _T.config.after( _T._getRotationalResult( RotationalFrequency ) );
-            }
-        });
-    }
-
+		anime({
+			targets: this.config.rouletteNode,
+			rotate: {
+				duration: this.config.duration,
+				value: this.progressingDirection + RotationalFrequency,
+				easing: this.config.easing,
+			},
+			complete: () => {
+				this.config.rouletteNode.classList.remove(this.inAnimationClassName);
+				this.config.after(this._getRotationalResult(RotationalFrequency));
+			},
+		});
+	}
 }

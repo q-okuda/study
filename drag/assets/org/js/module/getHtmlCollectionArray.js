@@ -1,3 +1,3 @@
-export default nodeArray =>{
-	return [].slice.call( nodeArray );
-}
+export default (nodeArray) => {
+	return [].slice.call(nodeArray);
+};
