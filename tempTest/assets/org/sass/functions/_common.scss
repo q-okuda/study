@@ -1,0 +1,20 @@
+/*
+このファイルの用途・使用方法
+https://github.com/q-jutaku/coding_rule/blob/main/css.md#sassmixins
+*/
+
+@function getSize($size, $width: 750) {
+  @return #{$size / $width * 100};
+}
+
+@function calcvw($num, $width: 375px) {
+  @return (1vw * $num / $width * 100);
+}
+
+@function ls($tracking) {
+  @return ($tracking / 1000) + em;
+}
+
+@function lh($tracking, $fontsize) {
+  @return ($tracking / $fontsize);
+}

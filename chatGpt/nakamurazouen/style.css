@@ -1,0 +1,64 @@
+/* 全体レイアウト */
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  background-color: #f8f8f8;
+}
+
+.container {
+  width: 1200px;
+  display: flex;
+  gap: 20px;
+  padding: 40px 0;
+}
+
+/* 左側のコンテンツ */
+.content {
+  width: 60%;
+}
+
+.subtitle {
+  color: #2e5fac;
+  font-size: 24px;
+  margin: 0;
+  font-weight: normal;
+}
+
+.title {
+  font-size: 36px;
+  margin: 10px 0;
+  font-weight: bold;
+}
+
+.divider {
+  width: 50px;
+  border: 1px solid #000;
+  margin: 20px 0;
+}
+
+.description {
+  font-size: 24px;
+  margin: 10px 0;
+  line-height: 1.5;
+}
+
+.text {
+  font-size: 16px;
+  color: #333;
+  line-height: 1.8;
+}
+
+/* 右側の画像 */
+.image-container {
+  width: 40%;
+}
+
+.image-container img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
