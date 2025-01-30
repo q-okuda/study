@@ -1,0 +1,16 @@
+---
+import Head from '../components/Head.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const { meta } = Astro.props;
+---
+<!doctype html>
+<html lang="ja">
+  <Head meta={meta} />
+	<body>
+    <Header />
+		<slot />
+    <Footer />
+	</body>
+</html>

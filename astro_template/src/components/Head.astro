@@ -1,0 +1,29 @@
+---
+import '../assets/styles/style.scss';
+import './LocalScripts.astro';
+
+const TITLE = 'ダミータイトル';
+const DESCRIPTION = 'ダミーデスクリプション';
+const KEYWORDS = 'ダミーキーワード';
+const OG_IMG = '/assets/example.jpg';
+const SITEURL = 'http://example.com';
+
+const { meta } = Astro.props;
+---
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="format-detection" content="telephone=no">
+  <title>{meta.title ? `${meta.title} | ${TITLE}` : TITLE}</title>
+  <meta name="description" content={meta.description || DESCRIPTION} />
+  { (meta.keywords || KEYWORDS) && <meta name="keywords" content={meta.keywords ? `${meta.keywords},${KEYWORDS}` : KEYWORDS} /> }
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:title" content={meta.title ? `${meta.title} | ${TITLE}` : TITLE}>
+  <meta property="og:type" content="website">
+  <meta property="og:url" content={SITEURL + meta.url}>
+  <meta property="og:image" content={SITEURL + OG_IMG}>
+  <meta property="og:description" content={meta.description || DESCRIPTION}>
+  <meta property="og:site_name" content={meta.title ? `${meta.title} | ${TITLE}` : TITLE}>
+  { meta.noindex && <meta name="robots" content="noindex,nofollow" /> }
+  { <link rel="canonical" href={meta.url ? SITEURL + meta.url : SITEURL} />}
+</head>

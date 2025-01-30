@@ -1,0 +1,21 @@
+{
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build && npm run format-html",
+    "format-html": "npx prettier --write dist/**/*.html",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^4.16.10",
+    "astro-relative-links": "^0.4.0",
+    "sass-embedded": "^1.82.0"
+  },
+  "devDependencies": {
+    "astrobook": "^0.5.1",
+    "autoprefixer": "^10.4.20",
+    "prettier": "^2.8.8", 
+    "vite-plugin-sass-glob-import": "^4.0.0"
+  }
+}
