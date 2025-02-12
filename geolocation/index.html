@@ -13,26 +13,31 @@
     <script>
     /**
      * 位置情報を取得するためのスクリプト
-     * ページロード時にnavigator.geolocation APIを使用してユーザーの現在位置を取得します
+     * 毎回位置情報の許可を求めるため、maximumAgeを0に設定し、
+     * enableHighAccuracyを切り替えることで新しい許可を要求します
      */
-    window.addEventListener('load', () => {
+    let highAccuracy = true;  // 精度設定を切り替えるためのフラグ
+
+    const getLocationWithPrompt = () => {
         // 位置情報が利用可能かチェック
         if (!navigator.geolocation) {
             alert('お使いのブラウザは位置情報に対応していません');
             return;
         }
 
-        // 位置情報の取得
+        // 位置情報の取得（精度設定を毎回切り替えることで新しい許可を要求）
         navigator.geolocation.getCurrentPosition(
             // 成功時のコールバック
             (position) => {
-                const latitude = position.coords.latitude;  // 緯度
-                const longitude = position.coords.longitude;  // 経度
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
                 
                 document.getElementById('result').innerHTML = `
                     <p>緯度: ${latitude}</p>
                     <p>経度: ${longitude}</p>
                 `;
+                // 次回の要求用に精度設定を反転
+                highAccuracy = !highAccuracy;
             },
             // エラー時のコールバック
             (error) => {
@@ -52,63 +57,23 @@
                         break;
                 }
                 document.getElementById('result').innerHTML = `<p>エラー: ${errorMessage}</p>`;
+                // 次回の要求用に精度設定を反転
+                highAccuracy = !highAccuracy;
             },
-            // オプション
+            // オプション（精度設定を毎回切り替える）
             {
-                enableHighAccuracy: true,  // 高精度な位置情報を取得
-                timeout: 5000,  // タイムアウト時間（ミリ秒）
-                maximumAge: 0  // キャッシュの有効期限（0の場合は常に最新の位置情報を取得）
+                enableHighAccuracy: highAccuracy,
+                timeout: 5000,
+                maximumAge: 0
             }
         );
-    });
+    };
 
-    // ボタンクリック時の処理も残しておく
-    document.getElementById('getLocation').addEventListener('click', () => {
-        // 位置情報が利用可能かチェック
-        if (!navigator.geolocation) {
-            alert('お使いのブラウザは位置情報に対応していません');
-            return;
-        }
+    // ページロード時に実行
+    window.addEventListener('load', getLocationWithPrompt);
 
-        // 位置情報の取得
-        navigator.geolocation.getCurrentPosition(
-            // 成功時のコールバック
-            (position) => {
-                const latitude = position.coords.latitude;  // 緯度
-                const longitude = position.coords.longitude;  // 経度
-                
-                document.getElementById('result').innerHTML = `
-                    <p>緯度: ${latitude}</p>
-                    <p>経度: ${longitude}</p>
-                `;
-            },
-            // エラー時のコールバック
-            (error) => {
-                let errorMessage = '';
-                switch (error.code) {
-                    case error.PERMISSION_DENIED:
-                        errorMessage = '位置情報の利用が許可されていません';
-                        break;
-                    case error.POSITION_UNAVAILABLE:
-                        errorMessage = '位置情報が取得できませんでした';
-                        break;
-                    case error.TIMEOUT:
-                        errorMessage = '位置情報の取得がタイムアウトしました';
-                        break;
-                    default:
-                        errorMessage = '予期せぬエラーが発生しました';
-                        break;
-                }
-                document.getElementById('result').innerHTML = `<p>エラー: ${errorMessage}</p>`;
-            },
-            // オプション
-            {
-                enableHighAccuracy: true,  // 高精度な位置情報を取得
-                timeout: 5000,  // タイムアウト時間（ミリ秒）
-                maximumAge: 0  // キャッシュの有効期限（0の場合は常に最新の位置情報を取得）
-            }
-        );
-    });
+    // ボタンクリック時に実行
+    document.getElementById('getLocation').addEventListener('click', getLocationWithPrompt);
     </script>
 </body>
 </html>
