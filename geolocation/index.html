@@ -13,8 +13,56 @@
     <script>
     /**
      * 位置情報を取得するためのスクリプト
-     * navigator.geolocation APIを使用してユーザーの現在位置を取得します
+     * ページロード時にnavigator.geolocation APIを使用してユーザーの現在位置を取得します
      */
+    window.addEventListener('load', () => {
+        // 位置情報が利用可能かチェック
+        if (!navigator.geolocation) {
+            alert('お使いのブラウザは位置情報に対応していません');
+            return;
+        }
+
+        // 位置情報の取得
+        navigator.geolocation.getCurrentPosition(
+            // 成功時のコールバック
+            (position) => {
+                const latitude = position.coords.latitude;  // 緯度
+                const longitude = position.coords.longitude;  // 経度
+                
+                document.getElementById('result').innerHTML = `
+                    <p>緯度: ${latitude}</p>
+                    <p>経度: ${longitude}</p>
+                `;
+            },
+            // エラー時のコールバック
+            (error) => {
+                let errorMessage = '';
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage = '位置情報の利用が許可されていません';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage = '位置情報が取得できませんでした';
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage = '位置情報の取得がタイムアウトしました';
+                        break;
+                    default:
+                        errorMessage = '予期せぬエラーが発生しました';
+                        break;
+                }
+                document.getElementById('result').innerHTML = `<p>エラー: ${errorMessage}</p>`;
+            },
+            // オプション
+            {
+                enableHighAccuracy: true,  // 高精度な位置情報を取得
+                timeout: 5000,  // タイムアウト時間（ミリ秒）
+                maximumAge: 0  // キャッシュの有効期限（0の場合は常に最新の位置情報を取得）
+            }
+        );
+    });
+
+    // ボタンクリック時の処理も残しておく
     document.getElementById('getLocation').addEventListener('click', () => {
         // 位置情報が利用可能かチェック
         if (!navigator.geolocation) {
