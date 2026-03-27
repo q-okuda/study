@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ステッカー</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      img {
+        width: 300px;
+      }
+      .sticker-box {
+        position: relative;
+        margin: 0 auto;
+        width: 300px;
+      }
+      .sticker-item{
+        display: inline-block;
+        width: 100%;
+        overflow: hidden;
+        transition: width 1s ease-out, left 1s ease-out;
+      }
+
+      .sticker-item.mod-normal{
+        width: 0;
+        filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
+      }
+      .sticker-item.mod-reverse{
+        width: 100%;
+        translate: -100% 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform-origin: right;
+        filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5)) grayscale(70%);
+        opacity: 0.9;
+      }
+      .sticker-item.mod-reverse img{
+        scale: -1 1;
+      }
+
+      .add-show .sticker-item {
+        width: 100%;
+      }
+      .add-show .sticker-item.mod-reverse{
+        width: 0;
+        left: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sticker-box">
+      <div class="sticker-item mod-normal">
+        <img src="./ice2.webp" alt="">
+      </div>
+      <div class="sticker-item mod-reverse">
+        <img src="./ice2.webp" alt="">
+      </div>
+    </div>
+    <script>
+      window.addEventListener('load', function() {
+        const stickerBox = document.querySelector('.sticker-box');
+        stickerBox.classList.add('add-show');
+      });
+    </script>
+  </body>
+</html>

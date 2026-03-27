@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<!--
+  概要: Web Share API の動作確認用ページ。
+  仕様: テキスト+URL の共有、画像ファイルの共有、canShare による事前チェックを試せる。
+  制限: Instagram「ストーリー」は Web API で直接指定できない。画像共有時に共有シートに Instagram が出るかは端末・OS・アプリ版による。
+-->
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web Share API</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 40rem;
+        margin: 1rem auto;
+        padding: 0 1rem;
+        line-height: 1.5;
+      }
+      section {
+        margin-bottom: 1.75rem;
+      }
+      .note {
+        font-size: 0.9rem;
+        color: #444;
+        border-left: 3px solid #ccc;
+        padding-left: 0.75rem;
+      }
+      #capability {
+        font-size: 0.85rem;
+        background: #f5f5f5;
+        padding: 0.75rem;
+        border-radius: 6px;
+        white-space: pre-wrap;
+      }
+      button {
+        margin: 0.25rem 0.5rem 0.25rem 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Web Share API</h1>
+
+    <section aria-labelledby="cap-h">
+      <h2 id="cap-h">環境チェック</h2>
+      <p id="capability">読み込み中…</p>
+    </section>
+
+    <section aria-labelledby="ig-h">
+      <h2 id="ig-h">Instagram ストーリーについて</h2>
+      <p class="note">
+        ブラウザから「ストーリーに投稿」専用の URL や API は公式にありません。
+        <strong>画像（または動画）をファイルとして共有</strong>したとき、スマホの共有シートに
+        Instagram が表示され、そこからストーリー／フィードを選べる場合があります（保証はありません）。
+        テキストと URL だけの共有では、Instagram が出にくいことが多いです。
+      </p>
+    </section>
+
+    <section aria-labelledby="text-h">
+      <h2 id="text-h">テキスト + URL</h2>
+      <button type="button" id="shareButton">共有（title / text / url）</button>
+    </section>
+
+    <section aria-labelledby="img-h">
+      <h2 id="img-h">画像ファイル（ストーリー候補）</h2>
+      <p>
+        <label for="imageInput">画像を選ぶ</label>
+        <input type="file" id="imageInput" accept="image/*" />
+      </p>
+      <button type="button" id="shareImageButton" disabled>
+        選択した画像を共有
+      </button>
+    </section>
+
+    <script>
+      /** @type {HTMLButtonElement} テキスト共有ボタン */
+      const shareButton = document.getElementById("shareButton");
+      /** @type {HTMLParagraphElement} 能力表示 */
+      const capabilityEl = document.getElementById("capability");
+      /** @type {HTMLInputElement} 画像ファイル入力 */
+      const imageInput = document.getElementById("imageInput");
+      /** @type {HTMLButtonElement} 画像共有ボタン */
+      const shareImageButton = document.getElementById("shareImageButton");
+
+      /** @type {string} 共有タイトル */
+      const title = "Web Share API";
+      /** @type {string} 共有テキスト */
+      const text =
+        "Web Share API is a new API that allows you to share content with other apps.";
+      /** @type {string} 共有 URL */
+      const url = "https://www.google.com";
+
+      /**
+       * @function 環境の Web Share 能力を画面に表示する
+       * @returns {void}
+       */
+      function renderCapability() {
+        const hasShare = typeof navigator.share === "function";
+        const hasCanShare = typeof navigator.canShare === "function";
+        const lines = [
+          `navigator.share: ${hasShare ? "あり" : "なし"}`,
+          `navigator.canShare: ${hasCanShare ? "あり" : "なし"}`,
+        ];
+        if (hasCanShare) {
+          try {
+            const dummy = new File([""], "probe.png", { type: "image/png" });
+            const fileOk = navigator.canShare({ files: [dummy] });
+            lines.push(`canShare({ files })（空PNGプローブ）: ${fileOk ? "true" : "false"}`);
+          } catch (e) {
+            lines.push(`canShare({ files }): 判定エラー — ${String(e)}`);
+          }
+        }
+        lines.push(
+          "ヒント: 実機の Safari（iOS）や Chrome（Android）で画像共有を試すと Instagram が出やすいです。"
+        );
+        capabilityEl.textContent = lines.join("\n");
+      }
+
+      renderCapability();
+
+      /**
+       * @function テキスト・URL をネイティブ共有する。不可ならクリップボードにフォールバック
+       * @returns {Promise<void>}
+       */
+      async function shareTextAndUrl() {
+        if (navigator.share) {
+          try {
+            await navigator.share({ title, text, url });
+          } catch (err) {
+            if (err && err.name === "AbortError") return;
+            console.error(err);
+            alert(`共有エラー: ${err && err.message ? err.message : String(err)}`);
+          }
+        } else {
+          await navigator.clipboard.writeText(url);
+          alert("Web Share 非対応のため URL をコピーしました");
+        }
+      }
+
+      shareButton.addEventListener("click", () => {
+        shareTextAndUrl();
+      });
+
+      imageInput.addEventListener("change", () => {
+        shareImageButton.disabled = !imageInput.files || imageInput.files.length === 0;
+      });
+
+      /**
+       * @function 選択画像を files 付きで共有する（Instagram 等の共有シート用）
+       * @returns {Promise<void>}
+       */
+      async function shareSelectedImage() {
+        const file = imageInput.files && imageInput.files[0];
+        if (!file) {
+          alert("画像を選んでください");
+          return;
+        }
+        if (!navigator.share) {
+          alert("この環境では Web Share API がありません");
+          return;
+        }
+        const payload = { files: [file], title, text };
+        if (navigator.canShare && !navigator.canShare(payload)) {
+          alert(
+            "canShare が false です。この画像タイプまたは files 共有がこのブラウザで未対応の可能性があります。"
+          );
+          return;
+        }
+        try {
+          await navigator.share(payload);
+        } catch (err) {
+          if (err && err.name === "AbortError") return;
+          console.error(err);
+          alert(`共有エラー: ${err && err.message ? err.message : String(err)}`);
+        }
+      }
+
+      shareImageButton.addEventListener("click", () => {
+        shareSelectedImage();
+      });
+    </script>
+  </body>
+</html>
