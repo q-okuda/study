@@ -1,0 +1,7 @@
+{
+  "name": "cms-contentful-practice",
+  "private": true,
+  "volta": {
+    "node": "24.14.1"
+  }
+}
