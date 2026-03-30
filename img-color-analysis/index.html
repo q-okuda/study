@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>商品一覧 — 画像からの近似色</title>
+  <!--
+    概要: EC 一覧向けに、可視カードのみを低解像度ヒストグラムで近似色化する（装飾用途）。
+    仕様: IntersectionObserver・同時実行制限・URL 単位キャッシュ・canvas 再利用・完了後 unobserve・img.decode。
+    制限: 同一オリジン/CORS 必須。file:// は環境により不可。src/currentSrc 変更時は再監視・再解析。
+    マークアップ: 商品行は HTML に静的記述。`images/` の増減に合わせて `li.js-productRow` を手動で追従すること。
+  -->
+  <script defer>
+    /**
+     * @typedef {Object} Rgb
+     * @property {number} r 赤 0–255
+     * @property {number} g 緑 0–255
+     * @property {number} b 青 0–255
+     */
+
+    /**
+     * 解析失敗の内部区分（ログ・A/B・サポート切り分け用。UI 文言は humanMessageForReason でマッピング）。
+     * @typedef {'empty_src' | 'image_not_ready' | 'load_error' | 'decode_failed' | 'no_2d_context' | 'invalid_dimensions' | 'canvas_security' | 'no_opaque_pixels' | 'unknown'} AnalysisFailureReason
+     */
+
+    /**
+     * @typedef {{ ok: true, rgb: Rgb } | { ok: false, reason: AnalysisFailureReason }} AnalysisOutcome
+     */
+
+    /**
+     * @typedef {Object} ProductRow
+     * @property {HTMLElement} root
+     * @property {HTMLImageElement} img
+     * @property {HTMLElement} colorWrap
+     * @property {HTMLElement} textEl
+     * @property {IntersectionObserver | null} visibilityObserver 完了後も参照（unobserve / 再 observe 用）
+     * @property {boolean} visible
+     * @property {boolean} enqueued
+     * @property {boolean} analyzed 最終結果を UI に出し終えたか（同一 URL で再解析するまで true のまま）
+     * @property {boolean} observationActive root を IO に載せているか
+     * @property {string | null} lastImageKey 直近で load を処理した currentSrc|src（変更検知用）
+     */
+
+    /**
+     * 精度と負荷のバランス: 長辺 72px・stride 1 は一覧用途で実測調整しやすい既定値。
+     * 低速端末向けに stride 2 や maxDecodeSide 56 へ下げるとピクセル数は約半分〜4分の1。
+     * @type {Readonly<{ maxDecodeSide: number; pixelStride: number; observerRootMargin: string; maxConcurrent: number; intersectionThreshold: number }>}
+     */
+    const CONFIG = {
+      maxDecodeSide: 72,
+      pixelStride: 1,
+      observerRootMargin: '120px 0px',
+      maxConcurrent: 2,
+      intersectionThreshold: 0.01,
+    };
+
+    /** @type {Map<string, AnalysisOutcome>} */
+    const outcomeCache = new Map();
+    /** @type {Map<string, Promise<AnalysisOutcome>>} */
+    const outcomeInflight = new Map();
+
+    /**
+     * @type {{ canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D | null; hr: Uint32Array; hg: Uint32Array; hb: Uint32Array }}
+     */
+    const decodeState = (() => {
+      const canvas = document.createElement('canvas');
+      return {
+        canvas,
+        ctx: canvas.getContext('2d', { willReadFrequently: true }),
+        hr: new Uint32Array(256),
+        hg: new Uint32Array(256),
+        hb: new Uint32Array(256),
+      };
+    })();
+
+    /** @type {ProductRow[]} */
+    let allRows = [];
+    /** @type {ProductRow[]} */
+    const workQueue = [];
+    let inFlightCount = 0;
+
+    /**
+     * @param {Uint32Array} hist
+     * @param {number} total
+     * @returns {number}
+     */
+    function medianBinFromHistogram(hist, total) {
+      if (total <= 0) {
+        return 0;
+      }
+      const target = Math.ceil(total / 2);
+      let c = 0;
+      for (let i = 0; i < 256; i++) {
+        c += hist[i];
+        if (c >= target) {
+          return i;
+        }
+      }
+      return 255;
+    }
+
+    /**
+     * @param {Uint32Array} hr
+     * @param {Uint32Array} hg
+     * @param {Uint32Array} hb
+     */
+    function clearHistograms(hr, hg, hb) {
+      hr.fill(0);
+      hg.fill(0);
+      hb.fill(0);
+    }
+
+    /**
+     * ピクセル読み取り〜ヒストグラムまで（同期）。失敗理由を区別する。
+     * @param {HTMLImageElement} img
+     * @returns {AnalysisOutcome}
+     */
+    function extractOutcomeFromImageSync(img) {
+      const w0 = img.naturalWidth;
+      const h0 = img.naturalHeight;
+      if (!w0 || !h0) {
+        return { ok: false, reason: 'invalid_dimensions' };
+      }
+
+      const { canvas, ctx, hr, hg, hb } = decodeState;
+      if (!ctx) {
+        return { ok: false, reason: 'no_2d_context' };
+      }
+
+      const scale = Math.min(1, CONFIG.maxDecodeSide / Math.max(w0, h0));
+      const cw = Math.max(1, Math.floor(w0 * scale));
+      const ch = Math.max(1, Math.floor(h0 * scale));
+
+      if (canvas.width !== cw || canvas.height !== ch) {
+        canvas.width = cw;
+        canvas.height = ch;
+      }
+
+      clearHistograms(hr, hg, hb);
+      ctx.drawImage(img, 0, 0, cw, ch);
+
+      let imageData;
+      try {
+        imageData = ctx.getImageData(0, 0, cw, ch);
+      } catch {
+        return { ok: false, reason: 'canvas_security' };
+      }
+
+      const data = imageData.data;
+      const stride = Math.max(1, Math.floor(CONFIG.pixelStride));
+      let total = 0;
+      const rowPixels = cw;
+      for (let y = 0; y < ch; y += stride) {
+        const row = y * rowPixels * 4;
+        for (let x = 0; x < cw; x += stride) {
+          const i = row + x * 4;
+          const a = data[i + 3];
+          if (a < 128) {
+            continue;
+          }
+          hr[data[i]]++;
+          hg[data[i + 1]]++;
+          hb[data[i + 2]]++;
+          total++;
+        }
+      }
+
+      if (total === 0) {
+        return { ok: false, reason: 'no_opaque_pixels' };
+      }
+
+      return {
+        ok: true,
+        rgb: {
+          r: medianBinFromHistogram(hr, total),
+          g: medianBinFromHistogram(hg, total),
+          b: medianBinFromHistogram(hb, total),
+        },
+      };
+    }
+
+    /**
+     * @param {HTMLImageElement} img
+     * @returns {string}
+     */
+    function cacheKeyForImage(img) {
+      return img.currentSrc || img.src || '';
+    }
+
+    /**
+     * @param {AnalysisOutcome} outcome
+     * @returns {void}
+     */
+    function logOutcomeForDebug(outcome) {
+      if (typeof console !== 'undefined' && console.debug) {
+        console.debug('[approxColor]', outcome);
+      }
+    }
+
+    /**
+     * @param {HTMLImageElement} img
+     * @returns {Promise<AnalysisOutcome>}
+     */
+    function getAnalysisOutcomeCached(img) {
+      const key = cacheKeyForImage(img);
+      if (!key) {
+        return Promise.resolve({ ok: false, reason: 'empty_src' });
+      }
+      const hit = outcomeCache.get(key);
+      if (hit) {
+        return Promise.resolve(hit);
+      }
+      const existing = outcomeInflight.get(key);
+      if (existing) {
+        return existing;
+      }
+
+      const p = Promise.resolve()
+        .then(() => extractOutcomeFromImageSync(img))
+        .then((outcome) => {
+          outcomeCache.set(key, outcome);
+          outcomeInflight.delete(key);
+          return outcome;
+        })
+        .catch(() => {
+          const fallback = /** @type {const} */ ({ ok: false, reason: 'unknown' });
+          outcomeCache.set(key, fallback);
+          outcomeInflight.delete(key);
+          return fallback;
+        });
+
+      outcomeInflight.set(key, p);
+      return p;
+    }
+
+    /**
+     * ブラウザが対応していれば decode を待ち、描画直前の未デコード状態を減らす。
+     * @param {HTMLImageElement} img
+     * @returns {Promise<void>}
+     */
+    function ensureImageDecoded(img) {
+      if (typeof img.decode === 'function') {
+        return img.decode();
+      }
+      return Promise.resolve();
+    }
+
+    /**
+     * @param {AnalysisFailureReason} reason
+     * @returns {string}
+     */
+    function humanMessageForReason(reason) {
+      switch (reason) {
+        case 'empty_src':
+          return '画像 URL が空のため近似色を出せません。';
+        case 'image_not_ready':
+          return '画像の準備が完了していないため近似色を出せません。';
+        case 'load_error':
+          return '画像の読み込みに失敗したため近似色を出せません。';
+        case 'decode_failed':
+          return '画像のデコードに失敗したため近似色を出せません。';
+        case 'no_2d_context':
+          return '描画環境を初期化できませんでした。';
+        case 'invalid_dimensions':
+          return '画像サイズが無効なため近似色を出せません。';
+        case 'canvas_security':
+          return 'セキュリティ制限によりピクセルを読み取れません（CORS / オリジンを確認）。';
+        case 'no_opaque_pixels':
+          return '不透明ピクセルが無いため近似色を算出できません。';
+        case 'unknown':
+        default:
+          return '近似色の算出に失敗しました。';
+      }
+    }
+
+    const APPROX_DISCLAIMER =
+      '一覧向け近似色（縮小サンプル・各チャンネルヒストグラム中央値。厳密な代表色ではありません）';
+
+    /**
+     * @param {ProductRow} row
+     */
+    function resetRowVisual(row) {
+      row.colorWrap.style.backgroundColor = '';
+      row.textEl.textContent = '';
+      delete row.textEl.dataset.approxColorReason;
+    }
+
+    /**
+     * @param {ProductRow} row
+     * @param {Rgb} rgb
+     */
+    function applyAnalysisSuccess(row, rgb) {
+      row.colorWrap.style.backgroundColor = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+      row.textEl.textContent =
+        `R ${rgb.r} / G ${rgb.g} / B ${rgb.b}（近似） — ${APPROX_DISCLAIMER}`;
+      delete row.textEl.dataset.approxColorReason;
+    }
+
+    /**
+     * @param {ProductRow} row
+     * @param {AnalysisFailureReason} reason
+     * @param {string} [overrideMessage] ユーザー向け短文（指定時は humanMessage より優先）
+     */
+    function applyAnalysisFailure(row, reason, overrideMessage) {
+      row.colorWrap.style.backgroundColor = '';
+      row.textEl.dataset.approxColorReason = reason;
+      const base = overrideMessage || humanMessageForReason(reason);
+      row.textEl.textContent = `${base} — ${APPROX_DISCLAIMER}`;
+    }
+
+    /**
+     * 解析完了後に交差監視を外す（本番ではログや計測と併用しやすい）。
+     * @param {ProductRow} row
+     */
+    function stopObservingRow(row) {
+      const io = row.visibilityObserver;
+      if (!io || !row.observationActive) {
+        return;
+      }
+      io.unobserve(row.root);
+      row.observationActive = false;
+    }
+
+    /**
+     * URL 変更後などに再び交差監視を載せる。
+     * @param {ProductRow} row
+     */
+    function resumeObservingRow(row) {
+      const io = row.visibilityObserver;
+      if (!io || row.observationActive) {
+        return;
+      }
+      io.observe(row.root);
+      row.observationActive = true;
+    }
+
+    /**
+     * @param {ProductRow} row
+     * @param {string} targetKey
+     * @returns {boolean}
+     */
+    function isStaleImageKey(row, targetKey) {
+      return cacheKeyForImage(row.img) !== targetKey;
+    }
+
+    /**
+     * @param {ProductRow} row
+     * @returns {Promise<void>}
+     */
+    async function runRowAnalysis(row) {
+      if (row.analyzed || !row.visible) {
+        return;
+      }
+
+      const { img } = row;
+      const targetKey = cacheKeyForImage(img);
+      if (!targetKey) {
+        return;
+      }
+
+      if (!img.complete || img.naturalWidth === 0) {
+        return;
+      }
+
+      try {
+        await ensureImageDecoded(img);
+      } catch {
+        if (!row.visible || isStaleImageKey(row, targetKey)) {
+          return;
+        }
+        row.analyzed = true;
+        logOutcomeForDebug({ ok: false, reason: 'decode_failed' });
+        applyAnalysisFailure(row, 'decode_failed');
+        stopObservingRow(row);
+        return;
+      }
+
+      if (!row.visible || isStaleImageKey(row, targetKey)) {
+        return;
+      }
+
+      const outcome = await getAnalysisOutcomeCached(img);
+
+      if (!row.visible || isStaleImageKey(row, targetKey)) {
+        return;
+      }
+
+      row.analyzed = true;
+
+      if (outcome.ok) {
+        applyAnalysisSuccess(row, outcome.rgb);
+      } else {
+        logOutcomeForDebug(outcome);
+        applyAnalysisFailure(row, outcome.reason);
+      }
+
+      stopObservingRow(row);
+    }
+
+    /**
+     */
+    function pumpQueue() {
+      while (inFlightCount < CONFIG.maxConcurrent && workQueue.length > 0) {
+        const row = workQueue.shift();
+        if (!row) {
+          continue;
+        }
+        row.enqueued = false;
+        if (row.analyzed || !row.visible) {
+          continue;
+        }
+
+        inFlightCount++;
+        const done = () => {
+          inFlightCount--;
+          pumpQueue();
+        };
+
+        runRowAnalysis(row).then(done).catch(() => {
+          if (!row.analyzed) {
+            row.analyzed = true;
+            logOutcomeForDebug({ ok: false, reason: 'unknown' });
+            applyAnalysisFailure(row, 'unknown');
+            stopObservingRow(row);
+          }
+          done();
+        });
+      }
+    }
+
+    /**
+     * @param {ProductRow} row
+     */
+    function enqueueIfNeeded(row) {
+      if (row.analyzed || row.enqueued || !row.visible) {
+        return;
+      }
+      const { img } = row;
+      if (!img.complete || img.naturalWidth === 0) {
+        return;
+      }
+      row.enqueued = true;
+      workQueue.push(row);
+      pumpQueue();
+    }
+
+    /**
+     * load のたびに URL 変化を検知し、状態を巻き戻して再解析可能にする。
+     * @param {ProductRow} row
+     */
+    function handleThumbLoad(row) {
+      const key = cacheKeyForImage(row.img);
+      if (row.lastImageKey !== key) {
+        row.lastImageKey = key;
+        row.analyzed = false;
+        row.enqueued = false;
+        resetRowVisual(row);
+        resumeObservingRow(row);
+      }
+      enqueueIfNeeded(row);
+    }
+
+    /**
+     * @param {ProductRow} row
+     */
+    function handleThumbError(row) {
+      row.analyzed = true;
+      row.lastImageKey = cacheKeyForImage(row.img);
+      logOutcomeForDebug({ ok: false, reason: 'load_error' });
+      applyAnalysisFailure(row, 'load_error');
+      stopObservingRow(row);
+    }
+
+    /**
+     * @param {IntersectionObserverEntry[]} entries
+     * @param {Map<Element, ProductRow>} rowByRoot
+     */
+    function handleIntersection(entries, rowByRoot) {
+      for (const entry of entries) {
+        const row = rowByRoot.get(entry.target);
+        if (!row) {
+          continue;
+        }
+        row.visible = entry.isIntersecting;
+        if (entry.isIntersecting) {
+          enqueueIfNeeded(row);
+        }
+      }
+    }
+
+    /**
+     * 静的 HTML の `ul.js-productList` 直下から行を束ねる（createElement は使わない）。
+     * 各 `li.js-productRow` は `:scope > .productList_thumbWrap`・`:scope > .productList_meta`・内側の `img.productList_thumb` を持つこと。
+     * @param {HTMLUListElement} ul
+     * @returns {ProductRow[]}
+     */
+    function collectProductRowsFromList(ul) {
+      /** @type {ProductRow[]} */
+      const rows = [];
+      const items = ul.querySelectorAll(':scope > li.js-productRow');
+      for (const li of items) {
+        if (!(li instanceof HTMLElement)) {
+          continue;
+        }
+        const colorWrap = li.querySelector(':scope > .productList_thumbWrap');
+        const textEl = li.querySelector(':scope > .productList_meta');
+        const img = li.querySelector(':scope img.productList_thumb');
+        if (
+          !colorWrap ||
+          !textEl ||
+          !(img instanceof HTMLImageElement)
+        ) {
+          continue;
+        }
+
+        /** @type {ProductRow} */
+        const row = {
+          root: li,
+          img,
+          colorWrap,
+          textEl,
+          visibilityObserver: null,
+          visible: false,
+          enqueued: false,
+          analyzed: false,
+          observationActive: false,
+          lastImageKey: null,
+        };
+
+        img.addEventListener('load', () => handleThumbLoad(row));
+        img.addEventListener('error', () => handleThumbError(row));
+        rows.push(row);
+      }
+      return rows;
+    }
+
+    /**
+     * @param {ProductRow[]} rows
+     * @returns {IntersectionObserver}
+     */
+    function attachVisibilityObserver(rows) {
+      /** @type {Map<Element, ProductRow>} */
+      const rowByRoot = new Map();
+      for (const row of rows) {
+        rowByRoot.set(row.root, row);
+      }
+
+      const io = new IntersectionObserver(
+        (entries) => handleIntersection(entries, rowByRoot),
+        {
+          root: null,
+          rootMargin: CONFIG.observerRootMargin,
+          threshold: CONFIG.intersectionThreshold,
+        },
+      );
+
+      for (const row of rows) {
+        row.visibilityObserver = io;
+        io.observe(row.root);
+        row.observationActive = true;
+      }
+
+      return io;
+    }
+
+    /**
+     * DOM 構築直後に既にデコード済みの画像へ load 相当の処理を走らせる。
+     * @param {ProductRow[]} rows
+     */
+    function bootstrapLoadedImages(rows) {
+      for (const row of rows) {
+        const { img } = row;
+        if (img.complete && img.naturalWidth > 0) {
+          handleThumbLoad(row);
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const ul = document.querySelector('ul.js-productList');
+      if (!ul) {
+        return;
+      }
+      allRows = collectProductRowsFromList(ul);
+      attachVisibilityObserver(allRows);
+      bootstrapLoadedImages(allRows);
+    });
+  </script>
+  <style>
+    .productList_lead {
+      margin: 0 0 1rem;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: #444;
+    }
+    .productList {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+    }
+    .productList_item {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      width: min(100%, 200px);
+    }
+    .productList_figure {
+      margin: 0;
+    }
+    .productList_thumb {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .productList_thumbWrap {
+      width: 100%;
+      padding: 2rem;
+      box-sizing: border-box;
+    }
+    .productList_meta {
+      margin: 0;
+      width: 100%;
+      font-family: system-ui, sans-serif;
+      font-size: 0.75rem;
+      line-height: 1.45;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>商品一覧（近似色）</h1>
+  <p class="productList_lead">
+    表示されたカードのみ低負荷で解析します。数値は装飾向けの近似であり、厳密な代表色ではありません。
+  </p>
+  <ul class="productList js-productList">
+    <li class="productList_item js-productRow">
+      <div class="productList_thumbWrap">
+        <figure class="productList_figure">
+          <img
+            class="productList_thumb"
+            src="images/2026-4912015250560-1-2.jpg"
+            alt="商品サムネイル 1"
+            loading="lazy"
+            decoding="async"
+          >
+        </figure>
+      </div>
+      <div class="productList_meta"></div>
+    </li>
+    <li class="productList_item js-productRow">
+      <div class="productList_thumbWrap">
+        <figure class="productList_figure">
+          <img
+            class="productList_thumb"
+            src="images/2026-4912074070567-1-2.jpg"
+            alt="商品サムネイル 2"
+            loading="lazy"
+            decoding="async"
+          >
+        </figure>
+      </div>
+      <div class="productList_meta"></div>
+    </li>
+    <li class="productList_item js-productRow">
+      <div class="productList_thumbWrap">
+        <figure class="productList_figure">
+          <img
+            class="productList_thumb"
+            src="images/2026-4912125410465-1-2.jpg"
+            alt="商品サムネイル 3"
+            loading="lazy"
+            decoding="async"
+          >
+        </figure>
+      </div>
+      <div class="productList_meta"></div>
+    </li>
+    <li class="productList_item js-productRow">
+      <div class="productList_thumbWrap">
+        <figure class="productList_figure">
+          <img
+            class="productList_thumb"
+            src="images/2026-4912128030462-1-2.jpg"
+            alt="商品サムネイル 4"
+            loading="lazy"
+            decoding="async"
+          >
+        </figure>
+      </div>
+      <div class="productList_meta"></div>
+    </li>
+    <li class="productList_item js-productRow">
+      <div class="productList_thumbWrap">
+        <figure class="productList_figure">
+          <img
+            class="productList_thumb"
+            src="images/2026-4912132050562-1-2.jpg"
+            alt="商品サムネイル 5"
+            loading="lazy"
+            decoding="async"
+          >
+        </figure>
+      </div>
+      <div class="productList_meta"></div>
+    </li>
+    <li class="productList_item js-productRow">
+      <div class="productList_thumbWrap">
+        <figure class="productList_figure">
+          <img
+            class="productList_thumb"
+            src="images/2026-4912180290460-1-2.jpg"
+            alt="商品サムネイル 6"
+            loading="lazy"
+            decoding="async"
+          >
+        </figure>
+      </div>
+      <div class="productList_meta"></div>
+    </li>
+    <li class="productList_item js-productRow">
+      <div class="productList_thumbWrap">
+        <figure class="productList_figure">
+          <img
+            class="productList_thumb"
+            src="images/2026-4912204810469-1-2.jpg"
+            alt="商品サムネイル 7"
+            loading="lazy"
+            decoding="async"
+          >
+        </figure>
+      </div>
+      <div class="productList_meta"></div>
+    </li>
+    <li class="productList_item js-productRow">
+      <div class="productList_thumbWrap">
+        <figure class="productList_figure">
+          <img
+            class="productList_thumb"
+            src="images/2026-4912206820466-1-2.jpg"
+            alt="商品サムネイル 8"
+            loading="lazy"
+            decoding="async"
+          >
+        </figure>
+      </div>
+      <div class="productList_meta"></div>
+    </li>
+    <li class="productList_item js-productRow">
+      <div class="productList_thumbWrap">
+        <figure class="productList_figure">
+          <img
+            class="productList_thumb"
+            src="images/2026-4912240320465-1-2.jpg"
+            alt="商品サムネイル 9"
+            loading="lazy"
+            decoding="async"
+          >
+        </figure>
+      </div>
+      <div class="productList_meta"></div>
+    </li>
+    <li class="productList_item js-productRow">
+      <div class="productList_thumbWrap">
+        <figure class="productList_figure">
+          <img
+            class="productList_thumb"
+            src="images/2026-4912277510464-1-2.jpg"
+            alt="商品サムネイル 10"
+            loading="lazy"
+            decoding="async"
+          >
+        </figure>
+      </div>
+      <div class="productList_meta"></div>
+    </li>
+  </ul>
+</body>
+</html>
