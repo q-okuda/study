@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>たまごっち風タイプ診断（モック）</title>
+  <!--
+    概要: 5問2択の診断モック。各問が1軸に対応し、タイプ定義と照合して重み付き一致スコアが最大のタイプを表示する。
+    主な仕様: 軸ごとの重み [5,4,3,2,1]、一致のみ加算、同点はタイプ配列の先勝ち。
+    制限: 本番用ではなくロジック・UI確認用の単一HTML。外部ライブラリなし。
+  -->
+  <style>
+    :root {
+      --bg: #fff8f0;
+      --card: #ffffff;
+      --accent: #ff9aa2;
+      --accent2: #ffdac1;
+      --text: #333;
+      --muted: #666;
+      --radius: 16px;
+      --shadow: 0 8px 24px rgba(255, 154, 162, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+      background: linear-gradient(165deg, var(--bg) 0%, #ffe8ec 50%, #fff5e6 100%);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 1rem;
+    }
+
+    .app {
+      max-width: 420px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem 1.25rem;
+      border: 1px solid rgba(255, 154, 162, 0.25);
+    }
+
+    h1 {
+      font-size: 1.35rem;
+      margin: 0 0 0.5rem;
+      text-align: center;
+      color: #c94f5c;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+    }
+
+    .progress {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 8px;
+      background: var(--accent2);
+      border-radius: 999px;
+      margin: 0 0.75rem;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #ff6b8a);
+      border-radius: 999px;
+      transition: width 0.25s ease;
+    }
+
+    .q-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .q-text {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin: 0 0 1.25rem;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .choice-btn {
+      display: block;
+      width: 100%;
+      padding: 1rem 1rem;
+      border: 2px solid var(--accent2);
+      border-radius: 12px;
+      background: #fff;
+      font-size: 0.95rem;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    }
+
+    .choice-btn:hover {
+      border-color: var(--accent);
+      background: #fff5f7;
+    }
+
+    .choice-btn:active {
+      transform: scale(0.98);
+    }
+
+    .choice-btn .tag {
+      display: inline-block;
+      font-weight: 700;
+      color: #c94f5c;
+      margin-right: 0.35rem;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.is-active {
+      display: block;
+    }
+
+    .result-title {
+      font-size: 1.25rem;
+      text-align: center;
+      color: #c94f5c;
+      margin: 0 0 1rem;
+    }
+
+    .result-score {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin: 1rem 0 0.5rem;
+      border-bottom: 1px solid var(--accent2);
+      padding-bottom: 0.25rem;
+    }
+
+    .axis-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 0.88rem;
+    }
+
+    .axis-list li {
+      padding: 0.4rem 0;
+      border-bottom: 1px dashed #eee;
+    }
+
+    .axis-list .ok {
+      color: #2e7d32;
+    }
+
+    .axis-list .ng {
+      color: var(--muted);
+    }
+
+    .debug-table {
+      width: 100%;
+      font-size: 0.72rem;
+      border-collapse: collapse;
+      margin-top: 0.5rem;
+    }
+
+    .debug-table th,
+    .debug-table td {
+      border: 1px solid #eee;
+      padding: 0.35rem 0.4rem;
+      text-align: left;
+    }
+
+    .debug-table th {
+      background: #fff0f2;
+    }
+
+    .debug-table tr:nth-child(even) td {
+      background: #fafafa;
+    }
+
+    .debug-table .best {
+      background: #e8f5e9 !important;
+      font-weight: 700;
+    }
+
+    .debug-table .col-axes {
+      white-space: normal;
+      word-break: break-all;
+      max-width: 140px;
+      font-size: 0.68rem;
+    }
+
+    .restart-btn {
+      margin-top: 1.25rem;
+      width: 100%;
+      padding: 0.9rem;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(90deg, var(--accent), #ff6b8a);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .restart-btn:hover {
+      opacity: 0.92;
+    }
+
+    .wrap-debug {
+      max-height: 280px;
+      overflow: auto;
+      border: 1px solid var(--accent2);
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- タイトル画面 -->
+    <section id="screen-start" class="screen is-active card" aria-labelledby="title-main">
+      <h1 id="title-main">たまごっち風タイプ診断</h1>
+      <p class="subtitle">5つの質問で、あなたに近いタイプを判定します（モック）</p>
+      <button type="button" class="restart-btn" id="btn-start">はじめる</button>
+    </section>
+
+    <!-- 設問画面 -->
+    <section id="screen-quiz" class="screen card" aria-live="polite">
+      <div class="progress">
+        <span id="progress-label">1 / 5</span>
+        <div class="progress-bar" aria-hidden="true">
+          <div class="progress-fill" id="progress-fill" style="width: 20%"></div>
+        </div>
+      </div>
+      <p class="q-label" id="axis-hint"></p>
+      <p class="q-text" id="question-text"></p>
+      <div class="choices">
+        <button type="button" class="choice-btn" id="choice-a" data-choice="a"></button>
+        <button type="button" class="choice-btn" id="choice-b" data-choice="b"></button>
+      </div>
+    </section>
+
+    <!-- 結果画面 -->
+    <section id="screen-result" class="screen card">
+      <h2 class="result-title" id="result-type-name"></h2>
+      <p class="result-score">スコア: <span id="result-score-val"></span> / 15</p>
+
+      <p class="section-title">あなたの5軸の回答</p>
+      <ul class="axis-list" id="result-user-axes"></ul>
+
+      <p class="section-title">一致した軸（重み）</p>
+      <ul class="axis-list" id="result-matches"></ul>
+
+      <p class="section-title">デバッグ: 全タイプのスコア（スコア高い順・一致数つき）</p>
+      <div class="wrap-debug">
+        <table class="debug-table" id="debug-scores-table">
+          <thead>
+            <tr>
+              <th>タイプ名</th>
+              <th>スコア</th>
+              <th>一致数</th>
+              <th>一致した軸</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <button type="button" class="restart-btn" id="btn-restart">もう一度</button>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /** 各軸の重み（Q1〜Q5） */
+      var AXIS_WEIGHTS = [5, 4, 3, 2, 1];
+
+      /**
+       * 軸の表示用ラベル（インデックス順）
+       * @type {{ id: string, left: string, right: string }[]}
+       */
+      var AXIS_META = [
+        { id: 'EI', left: '外向的(E)', right: '内向的(I)' },
+        { id: 'LA', left: '主導型(L)', right: '適応型(A)' },
+        { id: 'PE', left: '計画型(P)', right: '探索型(E)' },
+        { id: 'ME', left: '倫理型(M)', right: '感情型(E)' },
+        { id: 'RI', left: '現実志向(R)', right: '直感志向(I)' }
+      ];
+
+      /** 結果表示用: 軸インデックス → コード → 表示ラベル（括弧位置が軸ごとに異なるため明示） */
+      var AXIS_CODE_LABELS = [
+        { E: '外向的(E)', I: '内向的(I)' },
+        { L: '主導型(L)', A: '適応型(A)' },
+        { P: '計画型(P)', E: '探索型(E)' },
+        { M: '倫理型(M)', E: '感情型(E)' },
+        { R: '現実志向(R)', I: '直感志向(I)' }
+      ];
+
+      /**
+       * タイプ定義（name + 5軸のコード。位置ごとに意味が異なる同一文字に注意）
+       * 軸0: E/I, 軸1: L/A, 軸2: P/E(探索), 軸3: M/E(感情), 軸4: R/I(直感)
+       */
+      var TYPES = [
+        { name: 'おとなっぽいこ', axes: ['E', 'L', 'P', 'M', 'R'] },
+        { name: 'あわてんぼう', axes: ['E', 'L', 'P', 'E', 'R'] },
+        { name: '体育会系なこ', axes: ['E', 'L', 'P', 'E', 'I'] },
+        { name: 'キラキラなこ', axes: ['E', 'L', 'E', 'M', 'R'] },
+        { name: 'わいるどなこ', axes: ['E', 'L', 'E', 'M', 'I'] },
+        { name: 'あついこ', axes: ['E', 'L', 'E', 'E', 'R'] },
+        { name: 'ひょうきんなこ', axes: ['E', 'L', 'E', 'E', 'I'] },
+        { name: 'ナウいこ', axes: ['E', 'A', 'P', 'M', 'R'] },
+        { name: 'おめかしさん', axes: ['E', 'A', 'P', 'M', 'I'] },
+        { name: 'あまえんぼ', axes: ['E', 'A', 'P', 'E', 'R'] },
+        { name: 'いたずらっこ', axes: ['E', 'A', 'P', 'E', 'I'] },
+        { name: '愛嬌たっぷりなこ', axes: ['E', 'A', 'E', 'M', 'R'] },
+        { name: 'のんびりや', axes: ['E', 'A', 'E', 'M', 'I'] },
+        { name: 'げんきなこ', axes: ['E', 'A', 'E', 'E', 'R'] },
+        { name: 'おちょうしもの', axes: ['E', 'A', 'E', 'E', 'I'] },
+        { name: 'まじめなこ', axes: ['I', 'L', 'P', 'M', 'R'] },
+        { name: 'なぞめいたこ', axes: ['I', 'L', 'P', 'M', 'I'] },
+        { name: 'いじっぱり', axes: ['I', 'L', 'E', 'E', 'R'] },
+        { name: 'がんばりや', axes: ['I', 'A', 'P', 'M', 'R'] },
+        { name: '神秘的なこ', axes: ['I', 'A', 'P', 'M', 'I'] },
+        { name: 'きれいずきなこ', axes: ['I', 'A', 'P', 'E', 'R'] },
+        { name: 'くいしんぼう', axes: ['I', 'A', 'P', 'E', 'I'] },
+        { name: 'はずかしがりや', axes: ['I', 'A', 'E', 'M', 'R'] },
+        { name: 'やさしいこ', axes: ['I', 'A', 'E', 'M', 'I'] },
+        { name: 'ひとなつっこいこ', axes: ['I', 'A', 'E', 'E', 'I'] }
+      ];
+
+      /**
+       * 設問データ（text, 軸インデックス, A/B が返すコード）
+       */
+      var QUESTIONS = [
+        {
+          axisIndex: 0,
+          text: 'あなたはどちらに近い？',
+          a: { code: 'E', label: '人と一緒にいると元気が出る' },
+          b: { code: 'I', label: 'ひとりの時間で元気を回復する' }
+        },
+        {
+          axisIndex: 1,
+          text: 'グループで物事を進めるとき、あなたは？',
+          a: { code: 'L', label: '自分から方向を決めてリードしたい' },
+          b: { code: 'A', label: 'みんなのペースに合わせて進めたい' }
+        },
+        {
+          axisIndex: 2,
+          text: '休日の予定について、あなたは？',
+          a: { code: 'P', label: '前もって予定を決めておくと安心だ' },
+          b: { code: 'E', label: 'その日の気分で行き先を決めたい' }
+        },
+        {
+          axisIndex: 3,
+          text: '友だちとケンカしたとき、あなたは？',
+          a: { code: 'M', label: 'どちらが正しいか、筋をはっきりさせたい' },
+          b: { code: 'E', label: 'まずはお互いの気持ちを大切にしたい' }
+        },
+        {
+          axisIndex: 4,
+          text: '新しいことを学ぶとき、あなたは？',
+          a: { code: 'R', label: '手順や事実を積み重ねて理解したい' },
+          b: { code: 'I', label: '全体像やひらめきから掴みたい' }
+        }
+      ];
+
+      var currentIndex = 0;
+      /** @type {string[]} 各軸の選択コード（Q1〜Q5順に埋める） */
+      var userAxes = ['', '', '', '', ''];
+
+      var elStart = document.getElementById('screen-start');
+      var elQuiz = document.getElementById('screen-quiz');
+      var elResult = document.getElementById('screen-result');
+      var elProgressLabel = document.getElementById('progress-label');
+      var elProgressFill = document.getElementById('progress-fill');
+      var elAxisHint = document.getElementById('axis-hint');
+      var elQuestionText = document.getElementById('question-text');
+      var elChoiceA = document.getElementById('choice-a');
+      var elChoiceB = document.getElementById('choice-b');
+
+      /**
+       * 画面を切り替える
+       * @param {'start'|'quiz'|'result'} name
+       */
+      function showScreen(name) {
+        elStart.classList.toggle('is-active', name === 'start');
+        elQuiz.classList.toggle('is-active', name === 'quiz');
+        elResult.classList.toggle('is-active', name === 'result');
+      }
+
+      /**
+       * 1タイプとのスコアと一致フラグを計算
+       * @param {{ name: string, axes: string[] }} typeRow
+       * @param {string[]} answers 長さ5のコード配列
+       * @returns {{ score: number, matches: boolean[] }}
+       */
+      function scoreType(typeRow, answers) {
+        var matches = [];
+        var score = 0;
+        for (var i = 0; i < 5; i++) {
+          var ok = answers[i] === typeRow.axes[i];
+          matches.push(ok);
+          if (ok) score += AXIS_WEIGHTS[i];
+        }
+        return { score: score, matches: matches };
+      }
+
+      /**
+       * 最もスコアが高いタイプを選ぶ（同点は配列先頭優先）
+       * @param {string[]} answers
+       * @returns {{ type: typeof TYPES[0], score: number, matches: boolean[], allScores: { name: string, score: number, matchCount: number, matchAxesText: string, typeIndex: number }[] }}
+       */
+      function pickBestType(answers) {
+        var best = null;
+        var bestScore = -1;
+        var bestMatches = [];
+        var allScores = [];
+
+        for (var t = 0; t < TYPES.length; t++) {
+          var row = TYPES[t];
+          var r = scoreType(row, answers);
+          var matchCount = 0;
+          var axisParts = [];
+          for (var mi = 0; mi < 5; mi++) {
+            if (r.matches[mi]) {
+              matchCount++;
+              axisParts.push('軸' + (mi + 1) + '(+' + AXIS_WEIGHTS[mi] + ')');
+            }
+          }
+          allScores.push({
+            name: row.name,
+            score: r.score,
+            matchCount: matchCount,
+            matchAxesText: axisParts.length ? axisParts.join(' ') : '—',
+            typeIndex: t
+          });
+          if (r.score > bestScore) {
+            bestScore = r.score;
+            best = row;
+            bestMatches = r.matches;
+          }
+        }
+
+        return {
+          type: best,
+          score: bestScore,
+          matches: bestMatches,
+          allScores: allScores
+        };
+      }
+
+      /**
+       * 設問画面を現在インデックスで描画
+       */
+      function renderQuestion() {
+        var q = QUESTIONS[currentIndex];
+        var meta = AXIS_META[q.axisIndex];
+        var n = currentIndex + 1;
+        elProgressLabel.textContent = n + ' / 5';
+        elProgressFill.style.width = (n / 5) * 100 + '%';
+        elAxisHint.textContent =
+          'Q' + n + '（軸' + (q.axisIndex + 1) + ': ' + meta.left + ' ⇔ ' + meta.right + '）';
+        elQuestionText.textContent = q.text;
+        elChoiceA.innerHTML = '<span class="tag">A</span>' + q.a.label;
+        elChoiceB.innerHTML = '<span class="tag">B</span>' + q.b.label;
+        elChoiceA.dataset.code = q.a.code;
+        elChoiceB.dataset.code = q.b.code;
+      }
+
+      /**
+       * 回答を記録して次へ
+       * @param {string} code
+       */
+      function onChoose(code) {
+        var q = QUESTIONS[currentIndex];
+        userAxes[q.axisIndex] = code;
+        currentIndex++;
+        if (currentIndex >= QUESTIONS.length) {
+          showResult();
+        } else {
+          renderQuestion();
+        }
+      }
+
+      /**
+       * コードから人間可読ラベル
+       * @param {number} axisIndex
+       * @param {string} code
+       */
+      function labelForCode(axisIndex, code) {
+        var row = AXIS_CODE_LABELS[axisIndex];
+        return row[code] || code;
+      }
+
+      /**
+       * 結果画面を描画
+       */
+      function showResult() {
+        var answers = userAxes.slice();
+        var result = pickBestType(answers);
+
+        document.getElementById('result-type-name').textContent = result.type.name;
+        document.getElementById('result-score-val').textContent = String(result.score);
+
+        var ulUser = document.getElementById('result-user-axes');
+        ulUser.innerHTML = '';
+        for (var i = 0; i < 5; i++) {
+          var li = document.createElement('li');
+          var w = AXIS_WEIGHTS[i];
+          li.textContent =
+            '軸' + (i + 1) + '（重み' + w + '）: ' + labelForCode(i, answers[i]);
+          ulUser.appendChild(li);
+        }
+
+        var ulMatch = document.getElementById('result-matches');
+        ulMatch.innerHTML = '';
+        for (var j = 0; j < 5; j++) {
+          var li2 = document.createElement('li');
+          if (result.matches[j]) {
+            li2.className = 'ok';
+            li2.textContent =
+              '軸' + (j + 1) + ': 一致（+' + AXIS_WEIGHTS[j] + '）';
+          } else {
+            li2.className = 'ng';
+            li2.textContent = '軸' + (j + 1) + ': 不一致（0）';
+          }
+          ulMatch.appendChild(li2);
+        }
+
+        var sorted = result.allScores.slice().sort(function (a, b) {
+          if (b.score !== a.score) return b.score - a.score;
+          if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+          return a.typeIndex - b.typeIndex;
+        });
+
+        var tbody = document.querySelector('#debug-scores-table tbody');
+        tbody.innerHTML = '';
+        for (var k = 0; k < sorted.length; k++) {
+          var item = sorted[k];
+          var tr = document.createElement('tr');
+          if (item.name === result.type.name) {
+            tr.className = 'best';
+          }
+          tr.innerHTML =
+            '<td>' +
+            item.name +
+            '</td><td>' +
+            item.score +
+            '</td><td>' +
+            item.matchCount +
+            ' / 5</td><td class="col-axes">' +
+            item.matchAxesText +
+            '</td>';
+          tbody.appendChild(tr);
+        }
+
+        showScreen('result');
+      }
+
+      /**
+       * 診断を最初から
+       */
+      function resetQuiz() {
+        currentIndex = 0;
+        userAxes = ['', '', '', '', ''];
+        renderQuestion();
+        showScreen('quiz');
+      }
+
+      document.getElementById('btn-start').addEventListener('click', function () {
+        resetQuiz();
+      });
+
+      document.getElementById('btn-restart').addEventListener('click', function () {
+        showScreen('start');
+      });
+
+      elChoiceA.addEventListener('click', function () {
+        onChoose(elChoiceA.dataset.code);
+      });
+      elChoiceB.addEventListener('click', function () {
+        onChoose(elChoiceB.dataset.code);
+      });
+
+      // 初期はタイトルのみ
+      showScreen('start');
+    })();
+  </script>
+</body>
+</html>
